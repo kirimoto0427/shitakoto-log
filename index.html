@@ -1,244 +1,364 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>したことログ</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>したことログ</title>
+  <style>
+    :root{
+      --bg:#f7f9ff;
+      --card:#ffffffcc;
+      --ink:#1b1f2a;
+      --sub:#5f6b7a;
+      --accent:#4b7cff;
+      --pill:#e9f0ff;
+      --line:#e7ecf6;
+      --shadow: 0 10px 30px rgba(20, 40, 90, .08);
+      --radius: 22px;
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: radial-gradient(1200px 700px at 20% 0%, #eef2ff 0%, var(--bg) 55%, #f9fbff 100%);
+      color:var(--ink);
+    }
+    .wrap{
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 28px 16px 56px;
+    }
+    .title{
+      display:flex; align-items:center; gap:10px;
+      font-size: 30px; font-weight: 800; letter-spacing:.02em;
+      margin: 8px 0 8px;
+    }
+    .dot{
+      width:18px; height:18px; border-radius:50%;
+      background: #ffd84a;
+      box-shadow: 0 6px 18px rgba(255, 216, 74, .35);
+    }
+    .today{
+      color: var(--accent);
+      font-weight: 700;
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
 
-<style>
-body{
-font-family:system-ui;
-background:#FFFFFF;
-padding:20px;
-color:#222;
-}
+    .pills{
+      display:flex; flex-wrap:wrap; gap:10px;
+      margin: 10px 0 18px;
+    }
+    .pill{
+      border: 0;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--pill);
+      color: var(--accent);
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .05s ease, filter .15s ease;
+    }
+    .pill:active{ transform: scale(.98); }
+    .pill.active{
+      background: var(--accent);
+      color: white;
+      filter: drop-shadow(0 10px 20px rgba(75,124,255,.25));
+    }
 
-/* タイトル */
-.title{
-font-size:22px;
-font-weight:700;
-margin-bottom:6px;
-}
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      backdrop-filter: blur(8px);
+      margin: 14px 0;
+    }
+    .card h3{
+      margin: 0 0 12px;
+      font-size: 15px;
+      color: var(--sub);
+      font-weight: 800;
+    }
+    .bigBtns{
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .bigBtn{
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 18px;
+      font-weight: 800;
+      color: #3a4656;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(20,40,90,.06);
+      transition: transform .05s ease, box-shadow .15s ease;
+    }
+    .bigBtn:active{ transform: scale(.99); }
+    .bigBtn:hover{ box-shadow: 0 10px 24px rgba(20,40,90,.09); }
 
-.today{
-color:#7A78FF;
-font-weight:600;
-margin-bottom:20px;
-}
+    .addRow{
+      display:flex; gap:10px; align-items:center;
+      margin-top: 8px;
+    }
+    input[type="text"]{
+      flex:1;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 16px;
+      outline: none;
+    }
+    .addBtn{
+      border:0;
+      border-radius: 16px;
+      padding: 12px 16px;
+      background: var(--accent);
+      color: white;
+      font-weight: 900;
+      cursor:pointer;
+      box-shadow: 0 10px 22px rgba(75,124,255,.25);
+    }
+    .addBtn:active{ transform: scale(.99); }
 
-/* カテゴリ */
-.catWrap{
-display:flex;
-flex-wrap:wrap;
-gap:14px;
-margin-bottom:32px;
-}
-
-.catBtn{
-background:#F5F7FF;
-border:none;
-padding:12px 18px;
-border-radius:20px;
-font-size:15px;
-font-weight:500;
-box-shadow:0 2px 8px rgba(0,0,0,0.04);
-}
-
-.catActive{
-background:#ECEBFF;
-}
-
-/* カード */
-.card{
-background:#F5F7FF;
-border-radius:20px;
-padding:18px;
-margin-bottom:32px;
-box-shadow:0 2px 8px rgba(0,0,0,0.04);
-}
-
-/* 項目ボタン */
-.itemBtn{
-display:block;
-width:100%;
-border:none;
-background:#FFFFFF;
-padding:14px;
-margin-bottom:12px;
-border-radius:16px;
-font-size:15px;
-}
-
-/* 入力 */
-input{
-width:70%;
-padding:12px;
-border-radius:14px;
-border:1px solid #eee;
-margin-right:8px;
-}
-
-/* 操作 */
-.actionBtn{
-background:#FFEFF6;
-border:none;
-padding:12px 16px;
-border-radius:16px;
-margin-right:10px;
-}
-
-/* ログ */
-.logItem{
-background:#FFFFFF;
-padding:12px;
-border-radius:14px;
-margin-bottom:10px;
-font-size:14px;
-color:#444;
-}
-
-/* 押したフィードバック */
-button:active{
-transform:scale(0.98);
-background:#DCD9FF;
-transition:0.08s;
-}
-</style>
+    .logItem{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+      padding: 12px 10px;
+      border-top: 1px solid var(--line);
+    }
+    .logLeft{
+      display:flex; flex-direction:column; gap:2px;
+      min-width:0;
+    }
+    .logMain{
+      font-weight: 900;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .logMeta{
+      color: var(--sub);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .delBtn{
+      border:1px solid var(--line);
+      background:white;
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor:pointer;
+      color:#6b7280;
+      font-weight:900;
+    }
+    .empty{
+      color: var(--sub);
+      font-weight: 800;
+      text-align:center;
+      padding: 10px 0 2px;
+    }
+    .footerHint{
+      margin-top: 10px;
+      color: #8a93a3;
+      font-size: 12px;
+      font-weight: 700;
+      text-align:center;
+    }
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <div class="title"><span class="dot"></span>したことログ</div>
+    <div class="today">今日：<span id="todayCount">0</span>件</div>
 
-<div class="title">🟡 したことログ</div>
-<div class="today" id="todayCount">今日：0件</div>
+    <div class="pills" id="categoryPills"></div>
 
-<!-- カテゴリ -->
-<div class="catWrap" id="cats"></div>
+    <div class="card">
+      <h3 id="categoryTitle">カテゴリ</h3>
+      <div class="bigBtns" id="presetButtons"></div>
 
-<!-- 項目カード -->
-<div class="card">
-<div id="items"></div>
-</div>
+      <div class="addRow">
+        <input id="customInput" type="text" placeholder="例：ご飯、薬、洗顔 など" />
+        <button class="addBtn" id="customAddBtn">追加</button>
+      </div>
+      <div class="footerHint">※ 追加した文字は「今選んでるカテゴリ」に記録されます</div>
+    </div>
 
-<!-- 自由入力 -->
-<div class="card">
-<input id="freeText" placeholder="その他したこと">
-<button class="itemBtn" onclick="addFree()">追加</button>
-</div>
+    <div class="card">
+      <h3>今日のログ</h3>
+      <div id="logList"></div>
+    </div>
+  </div>
 
-<!-- 操作 -->
-<div class="card">
-<button class="actionBtn" onclick="undo()">↩ 取り消し</button>
-<button class="actionBtn" onclick="clearAll()">全消去</button>
-</div>
+  <script>
+    // ===== 設定（カテゴリと項目）=====
+    const categories = {
+      "家事": ["洗濯", "風呂", "料理", "片付け", "ゴミ出し"],
+      "買い物": ["スーパー", "ドラッグストア", "コンビニ", "ネット注文"],
+      "連絡": ["電話", "LINE返す", "予約", "問い合わせ"],
+      "外出": ["散歩", "通院", "用事で外", "友達"],
+      "用事": ["手続き", "提出", "振込", "予約変更"],
+      // ★追加：その他カテゴリ（ご飯・薬・洗顔）
+      "その他": ["ご飯", "薬", "洗顔"]
+    };
 
-<!-- ログ -->
-<div class="card">
-<div id="log"></div>
-</div>
+    // ===== 保存（localStorage）=====
+    const STORAGE_KEY = "shitakoto_log_v1";
 
-<script>
-const KEY="doneLogs";
+    function getTodayKey(){
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const day = String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
+    }
 
-const data={
-"家事":["洗濯","風呂","料理","片付け","ゴミ出し"],
-"買い物":["スーパー","ドラッグストア","コンビニ","ネット注文"],
-"連絡":["LINE","電話","予約","返信"],
-"外出":["散歩","移動","通院","役所","外食"],
-"用事":["書類","支払い","手続き","提出"]
-};
+    function loadAll(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      }catch(e){
+        return {};
+      }
+    }
+    function saveAll(all){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    }
 
-let currentCat="家事";
-let lastAdded=null;
+    function loadToday(){
+      const all = loadAll();
+      const key = getTodayKey();
+      return all[key] || [];
+    }
+    function saveToday(items){
+      const all = loadAll();
+      const key = getTodayKey();
+      all[key] = items;
+      saveAll(all);
+    }
 
-function nowText(){
-const n=new Date();
-return `${n.getFullYear()}/${n.getMonth()+1}/${n.getDate()} `
-+`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;
-}
+    // ===== UI =====
+    const categoryPills = document.getElementById("categoryPills");
+    const presetButtons = document.getElementById("presetButtons");
+    const categoryTitle = document.getElementById("categoryTitle");
+    const customInput = document.getElementById("customInput");
+    const customAddBtn = document.getElementById("customAddBtn");
+    const logList = document.getElementById("logList");
+    const todayCount = document.getElementById("todayCount");
 
-function isToday(str){
-const d=new Date();
-const today=`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
-return str.startsWith(today);
-}
+    let currentCategory = Object.keys(categories)[0];
 
-function updateTodayCount(){
-let logs=JSON.parse(localStorage.getItem(KEY)||"[]");
-let count=logs.filter(l=>isToday(l)).length;
-document.getElementById("todayCount").innerText=`今日：${count}件`;
-}
+    function renderCategories(){
+      categoryPills.innerHTML = "";
+      Object.keys(categories).forEach(cat=>{
+        const btn = document.createElement("button");
+        btn.className = "pill" + (cat === currentCategory ? " active" : "");
+        btn.textContent = cat;
+        btn.addEventListener("click", ()=>{
+          currentCategory = cat;
+          renderCategories();
+          renderPresets();
+        });
+        categoryPills.appendChild(btn);
+      });
+    }
 
-function renderCats(){
-let html="";
-Object.keys(data).forEach(c=>{
-let active=c===currentCat ? "catActive" : "";
-html+=`<button class="catBtn ${active}" onclick="setCat('${c}')">${c}</button>`;
-});
-document.getElementById("cats").innerHTML=html;
-}
+    function addLog(text, category){
+      const items = loadToday();
+      items.unshift({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(),
+        text,
+        category,
+        at: new Date().toISOString()
+      });
+      saveToday(items);
+      renderLog();
+    }
 
-function renderItems(){
-let list=data[currentCat];
-let html="";
-list.forEach(i=>{
-html+=`<button class="itemBtn" onclick="addLog('${i}')">${i}</button>`;
-});
-document.getElementById("items").innerHTML=html;
-}
+    function renderPresets(){
+      categoryTitle.textContent = currentCategory;
+      presetButtons.innerHTML = "";
+      const list = categories[currentCategory] || [];
+      list.forEach(label=>{
+        const b = document.createElement("button");
+        b.className = "bigBtn";
+        b.textContent = label;
+        b.addEventListener("click", ()=> addLog(label, currentCategory));
+        presetButtons.appendChild(b);
+      });
+    }
 
-function setCat(cat){
-currentCat=cat;
-renderCats();
-renderItems();
-}
+    function renderLog(){
+      const items = loadToday();
+      todayCount.textContent = String(items.length);
 
-function addLog(item){
-let text=`${nowText()} → ${currentCat}：${item}`;
-let logs=JSON.parse(localStorage.getItem(KEY)||"[]");
-logs.unshift(text);
-localStorage.setItem(KEY,JSON.stringify(logs));
-lastAdded=text;
-renderLog();
-updateTodayCount();
-}
+      logList.innerHTML = "";
+      if(items.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "まだ0件。押したら記録されるよ👍";
+        logList.appendChild(empty);
+        return;
+      }
 
-function addFree(){
-let t=document.getElementById("freeText").value.trim();
-if(!t)return;
-addLog(t);
-document.getElementById("freeText").value="";
-}
+      items.forEach(item=>{
+        const row = document.createElement("div");
+        row.className = "logItem";
 
-function undo(){
-if(!lastAdded)return;
-let logs=JSON.parse(localStorage.getItem(KEY)||"[]");
-logs=logs.filter(x=>x!==lastAdded);
-localStorage.setItem(KEY,JSON.stringify(logs));
-lastAdded=null;
-renderLog();
-updateTodayCount();
-}
+        const left = document.createElement("div");
+        left.className = "logLeft";
 
-function clearAll(){
-localStorage.removeItem(KEY);
-renderLog();
-updateTodayCount();
-}
+        const main = document.createElement("div");
+        main.className = "logMain";
+        main.textContent = item.text;
 
-function renderLog(){
-let logs=JSON.parse(localStorage.getItem(KEY)||"[]");
-let html="";
-logs.forEach(l=>{
-html+=`<div class="logItem">${l}</div>`;
-});
-document.getElementById("log").innerHTML=html;
-}
+        const meta = document.createElement("div");
+        meta.className = "logMeta";
+        const t = new Date(item.at);
+        const hh = String(t.getHours()).padStart(2,"0");
+        const mm = String(t.getMinutes()).padStart(2,"0");
+        meta.textContent = `${item.category}・${hh}:${mm}`;
 
-renderCats();
-renderItems();
-renderLog();
-updateTodayCount();
-</script>
+        left.appendChild(main);
+        left.appendChild(meta);
 
+        const del = document.createElement("button");
+        del.className = "delBtn";
+        del.textContent = "削除";
+        del.addEventListener("click", ()=>{
+          const itemsNow = loadToday().filter(x=> x.id !== item.id);
+          saveToday(itemsNow);
+          renderLog();
+        });
+
+        row.appendChild(left);
+        row.appendChild(del);
+        logList.appendChild(row);
+      });
+    }
+
+    // 入力で追加（「、」「,」で複数入力OK）
+    function addFromInput(){
+      const raw = customInput.value.trim();
+      if(!raw) return;
+
+      const parts = raw.split(/[、,]/).map(s=>s.trim()).filter(Boolean);
+      parts.forEach(p=> addLog(p, currentCategory));
+      customInput.value = "";
+      customInput.focus();
+    }
+
+    customAddBtn.addEventListener("click", addFromInput);
+    customInput.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") addFromInput();
+    });
+
+    // 初期表示
+    renderCategories();
+    renderPresets();
+    renderLog();
+  </script>
 </body>
 </html>
