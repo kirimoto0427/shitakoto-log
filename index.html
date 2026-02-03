@@ -359,6 +359,17 @@
     renderCategories();
     renderPresets();
     renderLog();
+    const todayEl = document.getElementById("todayDate");
+if (todayEl) {
+  const d = new Date();
+  const dateText = d.toLocaleDateString("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    weekday: "short"
+  });
+  todayEl.textContent = `日付：${dateText}`;
+}
   </script>
 </body>
 </html>
