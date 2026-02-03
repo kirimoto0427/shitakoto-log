@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>したことログ</title>
+
+<style>
+body{
+font-family:system-ui;
+background:#FFFFFF;
+padding:20px;
+color:#222;
+}
+
+/* タイトル */
+.title{
+font-size:22px;
+font-weight:700;
+margin-bottom:6px;
+}
+
+.today{
+color:#7A78FF;
+font-weight:600;
+margin-bottom:20px;
+}
+
+/* カテゴリ */
+.catWrap{
+display:flex;
+flex-wrap:wrap;
+gap:14px;
+margin-bottom:32px;
+}
+
+.catBtn{
+background:#F5F7FF;
+border:none;
+padding:12px 18px;
+border-radius:20px;
+font-size:15px;
+font-weight:500;
+box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+
+.catActive{
+background:#ECEBFF;
+}
+
+/* カード */
+.card{
+background:#F5F7FF;
+border-radius:20px;
+padding:18px;
+margin-bottom:32px;
+box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* 項目ボタン */
+.itemBtn{
+display:block;
+width:100%;
+border:none;
+background:#FFFFFF;
+padding:14px;
+margin-bottom:12px;
+border-radius:16px;
+font-size:15px;
+}
+
+/* 入力 */
+input{
+width:70%;
+padding:12px;
+border-radius:14px;
+border:1px solid #eee;
+margin-right:8px;
+}
+
+/* 操作 */
+.actionBtn{
+background:#FFEFF6;
+border:none;
+padding:12px 16px;
+border-radius:16px;
+margin-right:10px;
+}
+
+/* ログ */
+.logItem{
+background:#FFFFFF;
+padding:12px;
+border-radius:14px;
+margin-bottom:10px;
+font-size:14px;
+color:#444;
+}
+
+/* 押したフィードバック */
+button:active{
+transform:scale(0.98);
+background:#DCD9FF;
+transition:0.08s;
+}
+</style>
+</head>
+
+<body>
+
+<div class="title">🟡 したことログ</div>
+<div class="today" id="todayCount">今日：0件</div>
+
+<!-- カテゴリ -->
+<div class="catWrap" id="cats"></div>
+
+<!-- 項目カード -->
+<div class="card">
+<div id="items"></div>
+</div>
+
+<!-- 自由入力 -->
+<div class="card">
+<input id="freeText" placeholder="その他したこと">
+<button class="itemBtn" onclick="addFree()">追加</button>
+</div>
+
+<!-- 操作 -->
+<div class="card">
+<button class="actionBtn" onclick="undo()">↩ 取り消し</button>
+<button class="actionBtn" onclick="clearAll()">全消去</button>
+</div>
+
+<!-- ログ -->
+<div class="card">
+<div id="log"></div>
+</div>
+
+<script>
+const KEY="doneLogs";
+
+const data={
+"家事":["洗濯","風呂","料理","片付け","ゴミ出し"],
+"買い物":["スーパー","ドラッグストア","コンビニ","ネット注文"],
+"連絡":["LINE","電話","予約","返信"],
+"外出":["散歩","移動","通院","役所","外食"],
+"用事":["書類","支払い","手続き","提出"]
+};
+
+let currentCat="家事";
+let lastAdded=null;
+
+function nowText(){
+const n=new Date();
+return `${n.getFullYear()}/${n.getMonth()+1}/${n.getDate()} `
++`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;
+}
+
+function isToday(str){
+const d=new Date();
+const today=`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
+return str.startsWith(today);
+}
+
+function updateTodayCount(){
+let logs=JSON.parse(localStorage.getItem(KEY)||"[]");
+let count=logs.filter(l=>isToday(l)).length;
+document.getElementById("todayCount").innerText=`今日：${count}件`;
+}
+
+function renderCats(){
+let html="";
+Object.keys(data).forEach(c=>{
+let active=c===currentCat ? "catActive" : "";
+html+=`<button class="catBtn ${active}" onclick="setCat('${c}')">${c}</button>`;
+});
+document.getElementById("cats").innerHTML=html;
+}
+
+function renderItems(){
+let list=data[currentCat];
+let html="";
+list.forEach(i=>{
+html+=`<button class="itemBtn" onclick="addLog('${i}')">${i}</button>`;
+});
+document.getElementById("items").innerHTML=html;
+}
+
+function setCat(cat){
+currentCat=cat;
+renderCats();
+renderItems();
+}
+
+function addLog(item){
+let text=`${nowText()} → ${currentCat}：${item}`;
+let logs=JSON.parse(localStorage.getItem(KEY)||"[]");
+logs.unshift(text);
+localStorage.setItem(KEY,JSON.stringify(logs));
+lastAdded=text;
+renderLog();
+updateTodayCount();
+}
+
+function addFree(){
+let t=document.getElementById("freeText").value.trim();
+if(!t)return;
+addLog(t);
+document.getElementById("freeText").value="";
+}
+
+function undo(){
+if(!lastAdded)return;
+let logs=JSON.parse(localStorage.getItem(KEY)||"[]");
+logs=logs.filter(x=>x!==lastAdded);
+localStorage.setItem(KEY,JSON.stringify(logs));
+lastAdded=null;
+renderLog();
+updateTodayCount();
+}
+
+function clearAll(){
+localStorage.removeItem(KEY);
+renderLog();
+updateTodayCount();
+}
+
+function renderLog(){
+let logs=JSON.parse(localStorage.getItem(KEY)||"[]");
+let html="";
+logs.forEach(l=>{
+html+=`<div class="logItem">${l}</div>`;
+});
+document.getElementById("log").innerHTML=html;
+}
+
+renderCats();
+renderItems();
+renderLog();
+updateTodayCount();
+</script>
+
+</body>
+</html>
