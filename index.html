@@ -1,195 +1,369 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>したことログ</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>したことログ</title>
 
-<style>
-  body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #f7f9ff;
-    margin: 0;
-    padding: 16px;
-    color: #333;
-  }
+  <style>
+    :root{
+      --bg:#f7f9ff;
+      --card:#ffffffcc;
+      --ink:#1b1f2a;
+      --sub:#5f6b7a;
+      --accent:#3b5cff;
+      --pill:#e9f0ff;
+      --line:#e7ecf6;
+    }
 
-  h1 {
-    margin-top: 0;
-  }
+    body{
+      margin:0;
+      background:var(--bg);
+      font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      color:var(--ink);
+      padding:18px;
+    }
 
-  .card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  }
+    .wrap{ max-width: 700px; margin:0 auto; }
 
-  .categories button,
-  .presets button,
-  .add-btn {
-    border: none;
-    border-radius: 999px;
-    padding: 10px 14px;
-    margin: 4px;
-    background: #eef2ff;
-    color: #3b5cff;
-    font-size: 14px;
-  }
+    .title{
+      display:flex;
+      align-items:flex-end;
+      gap:12px;
+      margin:8px 0 10px;
+    }
+    .title h1{
+      font-size:22px;
+      margin:0;
+      font-weight:800;
+      letter-spacing:.02em;
+    }
+    .today{
+      margin:0;
+      font-size:14px;
+      color:var(--sub);
+      font-weight:600;
+    }
 
-  .categories button.active {
-    background: #3b5cff;
-    color: #fff;
-  }
+    .cats{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin:12px 0 14px;
+    }
+    .catBtn{
+      border:none;
+      padding:10px 16px;
+      border-radius:999px;
+      background:var(--pill);
+      color:#2f5cff;
+      font-weight:700;
+      font-size:14px;
+    }
+    .catBtn.active{
+      background:var(--accent);
+      color:white;
+    }
 
-  input {
-    width: 70%;
-    padding: 10px;
-    border-radius: 999px;
-    border: 1px solid #ddd;
-  }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      box-shadow: 0 8px 18px rgba(20,30,60,.06);
+      margin-bottom:16px;
+    }
 
-  .log-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  }
+    .presets{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:10px;
+    }
+    .presetBtn{
+      border:none;
+      width:100%;
+      padding:14px 14px;
+      border-radius:16px;
+      background:white;
+      border:1px solid var(--line);
+      font-size:16px;
+      font-weight:700;
+      color:#2a2f3a;
+    }
 
-  .delete-btn {
-    border: none;
-    background: none;
-    color: #999;
-  }
-</style>
+    .inputRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-top:12px;
+    }
+    #customInput{
+      flex:1;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 14px;
+      font-size:16px;
+      outline:none;
+      background:white;
+    }
+    .addBtn{
+      border:none;
+      background:var(--accent);
+      color:white;
+      font-weight:800;
+      border-radius:16px;
+      padding:14px 16px;
+      min-width:80px;
+    }
+    .hint{
+      font-size:12px;
+      color:var(--sub);
+      margin-top:8px;
+    }
+
+    .logHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin:0 0 10px;
+    }
+    .logHead h2{
+      margin:0;
+      font-size:16px;
+    }
+    .danger{
+      border:none;
+      background:#ff4d4d;
+      color:white;
+      font-weight:800;
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:13px;
+    }
+
+    .logList{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .logItem{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:white;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 12px;
+      gap:12px;
+    }
+    .logText{
+      font-weight:800;
+      line-height:1.2;
+    }
+    .logMeta{
+      font-size:12px;
+      color:var(--sub);
+      margin-top:4px;
+      font-weight:600;
+    }
+    .delBtn{
+      border:none;
+      background:#f3f5fb;
+      color:#5c6676;
+      font-weight:800;
+      border-radius:12px;
+      padding:10px 12px;
+      white-space:nowrap;
+    }
+
+    .empty{
+      color:var(--sub);
+      font-size:13px;
+      margin:6px 0 0;
+    }
+  </style>
 </head>
 
 <body>
+<div class="wrap">
 
-<h1>🟡 したことログ</h1>
-
-<!-- ★ 日付表示（これが無かったのが原因） -->
-<div id="todayDate" style="margin-bottom:12px;color:#666;"></div>
-
-<div class="card categories" id="categories"></div>
-
-<div class="card presets" id="presets"></div>
-
-<div class="card">
-  <input id="customInput" placeholder="例：ご飯、薬、洗顔 など">
-  <button class="add-btn" id="customAddBtn">追加</button>
-  <div style="font-size:12px;color:#888;margin-top:6px;">
-    ※ 追加した文字は「今選んでるカテゴリ」に記録されます
+  <div class="title">
+    <h1>🟡 したことログ</h1>
+    <!-- ★ここに日付が出る -->
+    <p class="today" id="todayDate">日付：--</p>
   </div>
-</div>
 
-<div class="card">
-  <h3>今日のログ</h3>
-  <div id="logList"></div>
+  <div class="cats" id="categories"></div>
+
+  <div class="card">
+    <div class="presets" id="presets"></div>
+
+    <div class="inputRow">
+      <input id="customInput" placeholder="例：ご飯、薬、洗顔 など" />
+      <button class="addBtn" id="customAddBtn">追加</button>
+    </div>
+
+    <div class="hint">※ 追加した文字は「今選んでるカテゴリ」に記録されます</div>
+  </div>
+
+  <div class="card">
+    <div class="logHead">
+      <h2>今日のログ</h2>
+      <!-- ★ここが「全削除」 -->
+      <button class="danger" id="deleteAllBtn">全削除</button>
+    </div>
+
+    <div class="logList" id="logList"></div>
+    <div class="empty" id="emptyText" style="display:none;">まだログがありません</div>
+  </div>
+
 </div>
 
 <script>
-/* ===== データ ===== */
-const categories = ["家事", "買い物", "連絡", "外出", "その他"];
+  /* ========= 設定 ========= */
+  const categories = ["家事", "買い物", "連絡", "外出", "用事", "その他"];
 
-const presets = {
-  家事: ["洗濯", "料理", "片付け"],
-  買い物: ["スーパー", "ドラッグストア", "コンビニ", "ネット注文"],
-  連絡: ["電話", "LINE", "メール"],
-  外出: ["通院", "散歩"],
-  その他: ["ご飯", "薬", "洗顔"]
-};
+  const presets = {
+    家事: ["洗濯", "風呂", "料理", "片付け", "ゴミ出し"],
+    買い物: ["スーパー", "ドラッグストア", "コンビニ", "ネット注文"],
+    連絡: ["電話", "LINE", "メール"],
+    外出: ["通院", "散歩", "移動"],
+    用事: ["役所", "支払い", "郵便", "手続き"],
+    その他: ["ご飯", "薬", "洗顔"]
+  };
 
-let currentCategory = "家事";
-let logs = JSON.parse(localStorage.getItem("logs") || "[]");
+  const STORAGE_KEY = "shitakoto_logs_v1";
 
-/* ===== 日付表示 ===== */
-const todayEl = document.getElementById("todayDate");
-const d = new Date();
-const dateText = d.toLocaleDateString("ja-JP", {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  weekday: "short"
-});
-todayEl.textContent = `日付：${dateText}`;
+  let currentCategory = "家事";
+  let logs = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 
-/* ===== 描画 ===== */
-function renderCategories() {
-  const el = document.getElementById("categories");
-  el.innerHTML = "";
-  categories.forEach(c => {
-    const b = document.createElement("button");
-    b.textContent = c;
-    if (c === currentCategory) b.classList.add("active");
-    b.onclick = () => {
-      currentCategory = c;
-      renderCategories();
-      renderPresets();
-    };
-    el.appendChild(b);
+  /* ========= 日付表示 ========= */
+  const todayEl = document.getElementById("todayDate");
+  const d = new Date();
+  const dateText = d.toLocaleDateString("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    weekday: "short"
   });
-}
+  todayEl.textContent = `日付：${dateText}`;
 
-function renderPresets() {
-  const el = document.getElementById("presets");
-  el.innerHTML = "";
-  presets[currentCategory].forEach(p => {
-    const b = document.createElement("button");
-    b.textContent = p;
-    b.onclick = () => addLog(p);
-    el.appendChild(b);
-  });
-}
+  /* ========= 描画 ========= */
+  function renderCategories(){
+    const el = document.getElementById("categories");
+    el.innerHTML = "";
+    categories.forEach(c=>{
+      const b = document.createElement("button");
+      b.className = "catBtn" + (c === currentCategory ? " active" : "");
+      b.textContent = c;
+      b.onclick = () => {
+        currentCategory = c;
+        renderCategories();
+        renderPresets();
+      };
+      el.appendChild(b);
+    });
+  }
 
-function renderLog() {
-  const el = document.getElementById("logList");
-  el.innerHTML = "";
-  logs.forEach((l, i) => {
-    const div = document.createElement("div");
-    div.className = "log-item";
-    div.innerHTML = `
-      <span>${l.text}（${l.category}・${l.time}）</span>
-      <button class="delete-btn" onclick="removeLog(${i})">削除</button>
-    `;
-    el.appendChild(div);
-  });
-}
+  function renderPresets(){
+    const el = document.getElementById("presets");
+    el.innerHTML = "";
+    (presets[currentCategory] || []).forEach(p=>{
+      const b = document.createElement("button");
+      b.className = "presetBtn";
+      b.textContent = p;
+      b.onclick = () => addLog(p);
+      el.appendChild(b);
+    });
+  }
 
-/* ===== 追加・削除 ===== */
-function addLog(text) {
-  const time = new Date().toLocaleTimeString("ja-JP", {
-    hour: "2-digit",
-    minute: "2-digit"
+  function renderLog(){
+    const el = document.getElementById("logList");
+    const emptyEl = document.getElementById("emptyText");
+    el.innerHTML = "";
+
+    if (logs.length === 0){
+      emptyEl.style.display = "block";
+      return;
+    }
+    emptyEl.style.display = "none";
+
+    logs.forEach((l, i)=>{
+      const row = document.createElement("div");
+      row.className = "logItem";
+
+      const left = document.createElement("div");
+      left.innerHTML = `
+        <div class="logText">${escapeHtml(l.text)}</div>
+        <div class="logMeta">${escapeHtml(l.category)}・${escapeHtml(l.time)}</div>
+      `;
+
+      const del = document.createElement("button");
+      del.className = "delBtn";
+      del.textContent = "削除";
+      del.onclick = () => removeLog(i);
+
+      row.appendChild(left);
+      row.appendChild(del);
+      el.appendChild(row);
+    });
+  }
+
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  /* ========= 追加/削除 ========= */
+  function save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+  }
+
+  function addLog(text){
+    const t = new Date().toLocaleTimeString("ja-JP", { hour:"2-digit", minute:"2-digit" });
+    logs.unshift({ text, category: currentCategory, time: t });
+    save();
+    renderLog();
+  }
+
+  function removeLog(i){
+    logs.splice(i, 1);
+    save();
+    renderLog();
+  }
+
+  function deleteAll(){
+    if (!confirm("今日のログを全部消す？")) return;
+    logs = [];
+    save();
+    renderLog();
+  }
+
+  /* ========= 入力 ========= */
+  const customInput = document.getElementById("customInput");
+  document.getElementById("customAddBtn").onclick = () => {
+    const text = customInput.value.trim();
+    if (!text) return;
+    addLog(text);
+    customInput.value = "";
+  };
+
+  customInput.addEventListener("keydown", (e)=>{
+    if (e.key === "Enter") document.getElementById("customAddBtn").click();
   });
-  logs.unshift({ text, category: currentCategory, time });
-  localStorage.setItem("logs", JSON.stringify(logs));
+
+  document.getElementById("deleteAllBtn").onclick = deleteAll;
+
+  /* ========= 初期 ========= */
+  renderCategories();
+  renderPresets();
   renderLog();
-}
-
-function removeLog(i) {
-  logs.splice(i, 1);
-  localStorage.setItem("logs", JSON.stringify(logs));
-  renderLog();
-}
-
-/* ===== カスタム入力 ===== */
-document.getElementById("customAddBtn").onclick = () => {
-  const input = document.getElementById("customInput");
-  const text = input.value.trim();
-  if (!text) return;
-  addLog(text);
-  input.value = "";
-};
-
-document.getElementById("customInput").addEventListener("keydown", e => {
-  if (e.key === "Enter") document.getElementById("customAddBtn").click();
-});
-
-/* ===== 初期表示 ===== */
-renderCategories();
-renderPresets();
-renderLog();
 </script>
 
 </body>
