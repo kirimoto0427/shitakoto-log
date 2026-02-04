@@ -1,1 +1,99 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ラベリングログ</title>
 
+<style>
+body{
+font-family:system-ui;
+text-align:center;
+padding:30px;
+background:#f7f8ff;
+}
+
+button{
+margin:6px;
+padding:12px 16px;
+font-size:16px;
+border-radius:14px;
+border:none;
+background:#dfe6ff;
+}
+
+.clear{
+background:#ffd6d6;
+}
+
+#log{
+margin-top:24px;
+text-align:left;
+max-width:420px;
+margin-left:auto;
+margin-right:auto;
+}
+
+.item{
+background:white;
+padding:12px;
+border-radius:12px;
+margin-bottom:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.05);
+}
+</style>
+</head>
+
+<body>
+
+<h2>🧠 ラベリングログ</h2>
+
+<button onclick="setLabel('不安の思考')">不安の思考</button>
+<button onclick="setLabel('比較の解釈')">比較の解釈</button>
+<button onclick="setLabel('疲労反応')">疲労反応</button>
+<button onclick="setLabel('ドーパミン欲求')">ドーパミン欲求</button>
+<button onclick="setLabel('意味付けしそう')">意味付けしそう</button>
+
+<button onclick="setLabel('反芻')">反芻</button>
+<button onclick="setLabel('HP低下')">HP低下</button>
+<button onclick="setLabel('刺激過多')">刺激過多</button>
+<button onclick="setLabel('回収しそう')">回収しそう</button>
+<button onclick="setLabel('考えすぎ')">考えすぎ</button>
+
+<br><br>
+
+<button class="clear" onclick="clearLog()">ログ全消去</button>
+
+<div id="log"></div>
+
+<script>
+
+function setLabel(text){
+
+const now = new Date();
+
+const y = now.getFullYear();
+const m = now.getMonth()+1;
+const d = now.getDate();
+const h = now.getHours().toString().padStart(2,"0");
+const min = now.getMinutes().toString().padStart(2,"0");
+
+const timeText =
+y + "/" + m + "/" + d + " " + h + ":" + min + " → " + text;
+
+const div = document.createElement("div");
+div.className = "item";
+div.innerText = timeText;
+
+document.getElementById("log").prepend(div);
+
+}
+
+function clearLog(){
+document.getElementById("log").innerHTML = "";
+}
+
+</script>
+
+</body>
+</html>
