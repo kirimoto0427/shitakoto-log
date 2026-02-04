@@ -1,1 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>📋 今日のすること</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --ink:#111827;
+      --sub:#6b7280;
+      --line:#e5e7eb;
+      --card:#ffffff;
+      --shadow: 0 12px 30px rgba(0,0,0,.08);
+      --radius: 18px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .wrap{
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 28px 18px 48px;
+    }
+    h1{
+      font-size: 34px;
+      letter-spacing: .02em;
+      margin: 6px 0 18px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight: 800;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap: wrap;
+      margin: 10px 0 18px;
+    }
+    input[type="text"]{
+      flex: 1 1 240px;
+      height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font-size: 16px;
+      outline: none;
+      background: #fff;
+    }
+    button{
+      height: 44px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:active{ transform: translateY(1px); }
+    .mini{
+      color: var(--sub);
+      font-size: 13px;
+      margin-top: -6px;
+      margin-bottom: 12px;
+    }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    .list{
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .item{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .left{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .dot{
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #111827;
+      opacity: .25;
+      flex: 0 0 auto;
+    }
+    .txt{
+      font-size: 16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .meta{
+      font-size: 12px;
+      color: var(--sub);
+      margin-top: 2px;
+    }
+    .right{
+      display:flex;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+    .btn-danger{
+      border-color: #fecaca;
+      color: #b91c1c;
+      background: #fff5f5;
+    }
+    .btn-ghost{
+      background:#fff;
+    }
+    .empty{
+      color: var(--sub);
+      font-size: 14px;
+      padding: 18px 6px 6px;
+      text-align: center;
+    }
+    .top-actions{
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>📋 今日のすること</h1>
 
+    <div class="row">
+      <input id="text" type="text" placeholder="すること入力" autocomplete="off" />
+      <button id="add">追加</button>
+    </div>
+
+    <div class="mini">保存：この端末の中だけ（localStorage）／ タップで削除</div>
+
+    <div class="card">
+      <div class="top-actions">
+        <div style="font-weight:700;">リスト</div>
+        <button id="clear" class="btn-danger">全消去</button>
+      </div>
+      <div id="list" class="list"></div>
+      <div id="empty" class="empty" style="display:none;">まだ何もないよ。0個でも勝ち。</div>
+    </div>
+  </div>
+
+  <script>
+    const KEY = "kiri_today_todos_v1";
+
+    const $ = (id) => document.getElementById(id);
+    const textEl = $("text");
+    const addBtn = $("add");
+    const listEl = $("list");
+    const emptyEl = $("empty");
+    const clearBtn = $("clear");
+
+    function load(){
+      try{
+        return JSON.parse(localStorage.getItem(KEY) || "[]");
+      }catch(e){
+        return [];
+      }
+    }
+    function save(items){
+      localStorage.setItem(KEY, JSON.stringify(items));
+    }
+
+    function fmtTime(ts){
+      const d = new Date(ts);
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mm = String(d.getMinutes()).padStart(2,"0");
+      return `${hh}:${mm}`;
+    }
+
+    function render(){
+      const items = load();
+      listEl.innerHTML = "";
+
+      if(items.length === 0){
+        emptyEl.style.display = "block";
+        return;
+      }
+      emptyEl.style.display = "none";
+
+      items.forEach((it, idx) => {
+        const row = document.createElement("div");
+        row.className = "item";
+        row.title = "タップで削除";
+
+        const left = document.createElement("div");
+        left.className = "left";
+
+        const dot = document.createElement("div");
+        dot.className = "dot";
+
+        const textWrap = document.createElement("div");
+        textWrap.style.minWidth = "0";
+
+        const txt = document.createElement("div");
+        txt.className = "txt";
+        txt.textContent = it.text;
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        meta.textContent = fmtTime(it.ts);
+
+        textWrap.appendChild(txt);
+        textWrap.appendChild(meta);
+
+        left.appendChild(dot);
+        left.appendChild(textWrap);
+
+        const right = document.createElement("div");
+        right.className = "right";
+
+        const del = document.createElement("button");
+        del.className = "btn-ghost";
+        del.textContent = "削除";
+
+        // 行全体タップでも削除、ボタンでも削除
+        function remove(){
+          const items2 = load();
+          items2.splice(idx, 1);
+          save(items2);
+          render();
+        }
+        row.addEventListener("click", remove);
+        del.addEventListener("click", (e) => { e.stopPropagation(); remove(); });
+
+        right.appendChild(del);
+        row.appendChild(left);
+        row.appendChild(right);
+        listEl.appendChild(row);
+      });
+    }
+
+    function add(){
+      const t = (textEl.value || "").trim();
+      if(!t) return;
+      const items = load();
+      items.unshift({ text: t, ts: Date.now() });
+      save(items);
+      textEl.value = "";
+      render();
+    }
+
+    addBtn.addEventListener("click", add);
+    textEl.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") add();
+    });
+
+    clearBtn.addEventListener("click", () => {
+      if(confirm("全部消す？")){
+        save([]);
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
