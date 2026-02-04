@@ -1,1 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🟡 きりちゃんの楽しさ塊回収メモ（シンプル）</title>
+  <style>
+    :root{
+      --bg:#f7f9ff;
+      --card:#ffffff;
+      --ink:#0f172a;
+      --sub:#64748b;
+      --line:#e6edf7;
+      --accent:#3b82f6;
+      --danger:#ef4444;
+      --soft:#eef2ff;
+      --shadow: 0 10px 30px rgba(15,23,42,.08);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+      background: radial-gradient(1200px 500px at 10% 0%, #e9f0ff 0%, var(--bg) 55%, #ffffff 100%);
+      color:var(--ink);
+    }
+    .wrap{max-width:720px; margin:0 auto; padding:18px 14px 40px;}
+    header{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 6px 14px;
+    }
+    .dot{
+      width:34px; height:34px; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #ffe066, #f59e0b);
+      box-shadow: 0 8px 18px rgba(245,158,11,.25);
+      flex:0 0 auto;
+    }
+    h1{font-size:20px; margin:0; letter-spacing:.2px;}
+    .sub{font-size:12px; color:var(--sub); margin-top:2px;}
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding:14px;
+    }
+    .row{display:flex; gap:10px; align-items:center;}
+    input[type="text"]{
+      width:100%;
+      padding:12px 14px;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:16px;
+      outline:none;
+    }
+    input[type="text"]:focus{
+      border-color:#bcd7ff;
+      box-shadow:0 0 0 4px rgba(59,130,246,.12);
+    }
+    button{
+      border:none;
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:15px;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .btn-add{background:var(--soft); color:#1d4ed8; border:1px solid #dbeafe;}
+    .btn-add:active{transform:translateY(1px)}
+    .btn-mini{
+      padding:8px 10px; font-size:12px; border-radius:12px;
+      border:1px solid var(--line); background:#fff; color:var(--sub);
+    }
+    .btn-today{background:#f1f5ff; color:#1d4ed8; border:1px solid #dbeafe;}
+    .btn-all{background:#fff1f2; color:var(--danger); border:1px solid #fecdd3;}
+    .hint{
+      margin:10px 2px 0;
+      font-size:12px; color:var(--sub);
+      line-height:1.4;
+    }
+    .list{margin-top:14px;}
+    .item{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      padding:12px 12px;
+      border:1px solid var(--line);
+      border-radius: 16px;
+      background:#fff;
+      margin-top:10px;
+      user-select:none;
+    }
+    .left{display:flex; align-items:center; gap:10px; min-width:0;}
+    .date{
+      font-size:12px; color:var(--sub);
+      padding:6px 10px; border-radius: 999px;
+      background:#f8fafc; border:1px solid var(--line);
+      flex:0 0 auto;
+    }
+    .text{
+      font-size:16px; font-weight:600;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .right{font-size:12px; color:var(--sub);}
+    .empty{
+      margin-top:14px;
+      color:var(--sub);
+      text-align:center;
+      padding:20px 10px;
+      border:1px dashed #cbd5e1;
+      border-radius: 16px;
+      background: rgba(255,255,255,.55);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="dot" aria-hidden="true"></div>
+      <div>
+        <h1>きりちゃんの楽しさ塊回収メモ</h1>
+        <div class="sub">保存：この端末の中だけ（localStorage）</div>
+      </div>
+    </header>
 
+    <div class="card">
+      <div class="row">
+        <input id="text" type="text" placeholder="たくさん楽しい / 風が気持ちよかった / うまくいった など" />
+        <button class="btn-add" id="add">追加</button>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+        <button class="btn-mini btn-today" id="clearToday">0個の日</button>
+        <button class="btn-mini btn-all" id="clearAll">全消去</button>
+      </div>
+
+      <div class="hint">
+        タップで削除（確認あり）。<br/>
+        「0個の日」＝今日の分だけ消す（今日は拾わない日でもOK）。<br/>
+        「全消去」＝全部消す。
+      </div>
+
+      <div class="list" id="list"></div>
+      <div class="empty" id="empty" style="display:none;">まだ🟡がないよ。0個の日でも勝ち。</div>
+    </div>
+  </div>
+
+<script>
+  const KEY = "tanoshisa_simple_v1";
+
+  const $ = (id) => document.getElementById(id);
+  const textEl = $("text");
+  const listEl = $("list");
+  const emptyEl = $("empty");
+
+  function todayStr(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function load(){
+    try{
+      return JSON.parse(localStorage.getItem(KEY) || "[]");
+    }catch(e){
+      return [];
+    }
+  }
+
+  function save(items){
+    localStorage.setItem(KEY, JSON.stringify(items));
+  }
+
+  function render(){
+    const items = load();
+    listEl.innerHTML = "";
+
+    if(items.length === 0){
+      emptyEl.style.display = "block";
+      return;
+    }
+    emptyEl.style.display = "none";
+
+    // 新しい順
+    items.slice().reverse().forEach((it, idxFromEnd) => {
+      const idx = items.length - 1 - idxFromEnd;
+
+      const div = document.createElement("div");
+      div.className = "item";
+      div.title = "タップで削除";
+
+      const left = document.createElement("div");
+      left.className = "left";
+
+      const date = document.createElement("div");
+      date.className = "date";
+      date.textContent = it.date;
+
+      const text = document.createElement("div");
+      text.className = "text";
+      text.textContent = `🟡 ${it.text}`;
+
+      left.appendChild(date);
+      left.appendChild(text);
+
+      const right = document.createElement("div");
+      right.className = "right";
+      right.textContent = "タップで削除";
+
+      div.appendChild(left);
+      div.appendChild(right);
+
+      div.addEventListener("click", () => {
+        const ok = confirm(`これ消す？\n\n${it.date}  🟡 ${it.text}`);
+        if(!ok) return;
+        const cur = load();
+        cur.splice(idx, 1);
+        save(cur);
+        render();
+      });
+
+      listEl.appendChild(div);
+    });
+  }
+
+  function add(){
+    const v = textEl.value.trim();
+    if(!v){
+      alert("空っぽでもいいけど、今回は文字が欲しいやつ🙂\n（最短追加が欲しければ後で付け足す）");
+      return;
+    }
+    const items = load();
+    items.push({ date: todayStr(), text: v });
+    save(items);
+    textEl.value = "";
+    render();
+  }
+
+  $("add").addEventListener("click", add);
+
+  textEl.addEventListener("keydown", (e) => {
+    if(e.key === "Enter") add();
+  });
+
+  $("clearToday").addEventListener("click", () => {
+    const t = todayStr();
+    const items = load();
+    const filtered = items.filter(it => it.date !== t);
+    if(filtered.length === items.length){
+      alert("今日の🟡はまだ0個（それでOK）");
+      return;
+    }
+    const ok = confirm("今日の分だけ全部消す？（0個の日）");
+    if(!ok) return;
+    save(filtered);
+    render();
+  });
+
+  $("clearAll").addEventListener("click", () => {
+    const ok = confirm("全部消す？（全消去）");
+    if(!ok) return;
+    save([]);
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>
