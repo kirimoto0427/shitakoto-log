@@ -1,1 +1,333 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ADHD クイックリセット</title>
+  <style>
+    :root{
+      --bg:#f4f7ff;
+      --card:#ffffffcc;
+      --ink:#1b1f2a;
+      --sub:#5f6b7a;
+      --accent:#3b82f6;
+      --accent2:#ef4444;
+      --line:#dbe4ff;
+      --pill:#eef2ff;
+      --shadow: 0 10px 30px rgba(20,40,120,.10);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+      color:var(--ink);
+      background: radial-gradient(1200px 500px at 20% 0%, #dbeafe 0%, transparent 60%),
+                  radial-gradient(1000px 500px at 90% 20%, #e0e7ff 0%, transparent 55%),
+                  var(--bg);
+      min-height:100vh;
+    }
+    .wrap{max-width:880px;margin:0 auto;padding:22px 16px 80px;}
+    header{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+    .dot{width:14px;height:14px;border-radius:999px;background:linear-gradient(135deg,#f59e0b,#fbbf24);}
+    h1{font-size:22px;margin:0}
+    .date{color:var(--sub);font-size:13px;margin-left:8px}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px;}
+    @media (min-width:860px){ .grid{grid-template-columns:1.1fr .9fr;} }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+      backdrop-filter: blur(6px);
+    }
+    .card h2{font-size:16px;margin:0 0 10px 0;}
+    .muted{color:var(--sub);font-size:13px;line-height:1.5}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    button{
+      appearance:none;border:0;cursor:pointer;
+      border-radius:14px;
+      padding:12px 14px;
+      background:var(--accent);
+      color:white;font-weight:700;
+      box-shadow: 0 8px 20px rgba(59,130,246,.18);
+    }
+    button.secondary{
+      background:#11182710;color:#111827;
+      border:1px solid var(--line);
+      box-shadow:none;
+      font-weight:700;
+    }
+    button.danger{background:var(--accent2)}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      background:var(--pill);
+      border:1px solid var(--line);
+      padding:10px 12px;border-radius:999px;
+      font-size:13px;color:#111827;
+    }
+    textarea,input{
+      width:100%;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:14px;
+      padding:12px;
+      font-size:15px;
+      outline:none;
+    }
+    textarea{min-height:92px;resize:vertical}
+    .big{font-size:34px;font-weight:900;letter-spacing:.5px}
+    .klist{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+    .kitem{
+      display:flex;gap:10px;align-items:flex-start;
+      padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:#fff;
+    }
+    .kitem input{width:18px;height:18px;margin-top:2px}
+    .kitem label{flex:1}
+    .footnote{margin-top:10px;font-size:12px;color:var(--sub)}
+    .split{display:grid;grid-template-columns:1fr;gap:10px}
+    @media (min-width:520px){ .split{grid-template-columns:1fr 1fr;} }
+    .scale{display:flex;gap:8px;flex-wrap:wrap}
+    .scale button{padding:10px 12px;border-radius:999px;font-weight:800}
+    .scale button.secondary{background:#fff}
+    .log{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+    .log-item{padding:10px 12px;border:1px solid var(--line);background:#fff;border-radius:14px;margin-top:8px}
+    .log-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .tag{font-size:12px;color:#111827;background:var(--pill);border:1px solid var(--line);padding:6px 10px;border-radius:999px}
+    .smallbtn{padding:8px 10px;border-radius:12px;font-weight:800}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <span class="dot"></span>
+      <h1>ADHD クイックリセット</h1>
+      <div class="date" id="todayDate"></div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h2>① 3分リセットタイマー</h2>
+        <div class="row">
+          <div class="pill">残り <span class="big" id="timerText">03:00</span></div>
+          <button id="startBtn">スタート</button>
+          <button class="secondary" id="pauseBtn">一時停止</button>
+          <button class="secondary" id="resetBtn">リセット</button>
+        </div>
+        <p class="muted">「今は考える時間じゃない」→ 3分だけ身体に戻る用。終わったら次の一手を選ぶ。</p>
+      </section>
+
+      <section class="card">
+        <h2>② 次の一手（1つだけ選ぶ）</h2>
+        <div class="split">
+          <button class="secondary" data-action="水を一口飲む">水を一口</button>
+          <button class="secondary" data-action="トイレだけ行く">トイレ</button>
+          <button class="secondary" data-action="窓を開ける">換気</button>
+          <button class="secondary" data-action="机の上だけ片付ける">机だけ</button>
+          <button class="secondary" data-action="顔洗う">洗顔</button>
+          <button class="secondary" data-action="1分だけ散歩/ベランダ">1分外</button>
+        </div>
+        <div class="footnote">※押した内容はログに残る（自分の行動が見える化される）</div>
+      </section>
+
+      <section class="card">
+        <h2>③ 1文メモ（頭の外に出す）</h2>
+        <textarea id="memo" placeholder="例：今いちばん気になってるのは…（1文で）"></textarea>
+        <div class="row" style="margin-top:10px">
+          <button id="saveMemo">保存</button>
+          <button class="secondary" id="clearMemo">消す</button>
+          <span class="pill" id="memoSaved" style="display:none;">保存したよ</span>
+        </div>
+        <p class="muted">ポイント：長文にしない。1文で止める＝HP防御スキル。</p>
+      </section>
+
+      <section class="card">
+        <h2>④ 気分の圧（5段階）</h2>
+        <div class="scale" id="scale">
+          <button class="secondary" data-level="1">1 余裕</button>
+          <button class="secondary" data-level="2">2 まあ平気</button>
+          <button class="secondary" data-level="3">3 しんどい</button>
+          <button class="secondary" data-level="4">4 だいぶ無理</button>
+          <button class="secondary" data-level="5">5 限界</button>
+        </div>
+        <div class="log">
+          <div class="row" style="justify-content:space-between">
+            <div class="muted">今日のログ</div>
+            <button class="danger smallbtn" id="clearAll">全削除</button>
+          </div>
+          <div id="logList"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+  // ===== 日付表示 =====
+  const todayEl = document.getElementById("todayDate");
+  const d = new Date();
+  const dateText = d.toLocaleDateString("ja-JP", {year:"numeric",month:"2-digit",day:"2-digit",weekday:"short"});
+  todayEl.textContent = `日付：${dateText}`;
+
+  // ===== 保存キー =====
+  const KEY = "adhd_quick_reset_v1";
+
+  function loadState(){
+    try{
+      return JSON.parse(localStorage.getItem(KEY)) || { memo:"", log:[] };
+    }catch(e){
+      return { memo:"", log:[] };
+    }
+  }
+  function saveState(state){
+    localStorage.setItem(KEY, JSON.stringify(state));
+  }
+
+  // ===== ログ =====
+  const logList = document.getElementById("logList");
+  function nowHM(){
+    const t = new Date();
+    return t.toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"});
+  }
+  function renderLog(){
+    const state = loadState();
+    logList.innerHTML = "";
+    if(state.log.length === 0){
+      logList.innerHTML = `<div class="muted" style="margin-top:10px;">まだログなし</div>`;
+      return;
+    }
+    state.log.slice().reverse().forEach((item, idxRev)=>{
+      const idx = state.log.length - 1 - idxRev;
+      const div = document.createElement("div");
+      div.className = "log-item";
+      div.innerHTML = `
+        <div class="log-top">
+          <div><b>${item.text}</b> <span class="tag">${item.type}</span></div>
+          <div class="row">
+            <span class="muted">${item.time}</span>
+            <button class="secondary smallbtn" data-del="${idx}">削除</button>
+          </div>
+        </div>
+      `;
+      logList.appendChild(div);
+    });
+
+    logList.querySelectorAll("[data-del]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const del = Number(btn.getAttribute("data-del"));
+        const state2 = loadState();
+        state2.log.splice(del,1);
+        saveState(state2);
+        renderLog();
+      });
+    });
+  }
+  function addLog(type, text){
+    const state = loadState();
+    state.log.push({type, text, time: nowHM(), date: dateText});
+    saveState(state);
+    renderLog();
+  }
+
+  document.getElementById("clearAll").addEventListener("click", ()=>{
+    if(confirm("今日のログを全部消す？")){
+      const state = loadState();
+      state.log = [];
+      saveState(state);
+      renderLog();
+    }
+  });
+
+  // ===== 1文メモ =====
+  const memo = document.getElementById("memo");
+  const memoSaved = document.getElementById("memoSaved");
+  const stateInit = loadState();
+  memo.value = stateInit.memo || "";
+
+  document.getElementById("saveMemo").addEventListener("click", ()=>{
+    const state = loadState();
+    state.memo = memo.value.trim();
+    saveState(state);
+    memoSaved.style.display = "inline-flex";
+    setTimeout(()=> memoSaved.style.display="none", 1200);
+    if(state.memo) addLog("メモ","1文メモ保存");
+  });
+  document.getElementById("clearMemo").addEventListener("click", ()=>{
+    memo.value = "";
+    const state = loadState();
+    state.memo = "";
+    saveState(state);
+  });
+
+  // ===== 次の一手 =====
+  document.querySelectorAll("[data-action]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      addLog("次の一手", btn.getAttribute("data-action"));
+    });
+  });
+
+  // ===== 5段階 =====
+  document.querySelectorAll("#scale [data-level]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const lv = btn.getAttribute("data-level");
+      addLog("圧レベル", `レベル${lv}`);
+    });
+  });
+
+  // ===== タイマー =====
+  const timerText = document.getElementById("timerText");
+  const startBtn = document.getElementById("startBtn");
+  const pauseBtn = document.getElementById("pauseBtn");
+  const resetBtn = document.getElementById("resetBtn");
+
+  let total = 180; // 3min
+  let left = total;
+  let timerId = null;
+  let running = false;
+
+  function fmt(sec){
+    const m = String(Math.floor(sec/60)).padStart(2,"0");
+    const s = String(sec%60).padStart(2,"0");
+    return `${m}:${s}`;
+  }
+  function draw(){ timerText.textContent = fmt(left); }
+  draw();
+
+  function tick(){
+    if(left <= 0){
+      clearInterval(timerId); timerId=null; running=false;
+      left = 0; draw();
+      addLog("タイマー","3分リセット完了");
+      alert("3分おわり！ 次の一手を1個だけ選ぼう。");
+      return;
+    }
+    left -= 1; draw();
+  }
+
+  startBtn.addEventListener("click", ()=>{
+    if(running) return;
+    running = true;
+    addLog("タイマー","スタート");
+    timerId = setInterval(tick, 1000);
+  });
+
+  pauseBtn.addEventListener("click", ()=>{
+    if(!running) return;
+    running = false;
+    clearInterval(timerId); timerId=null;
+    addLog("タイマー","一時停止");
+  });
+
+  resetBtn.addEventListener("click", ()=>{
+    running = false;
+    clearInterval(timerId); timerId=null;
+    left = total; draw();
+    addLog("タイマー","リセット");
+  });
+
+  // 初期表示
+  renderLog();
+</script>
+</body>
+</html>
 
