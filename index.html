@@ -3,459 +3,210 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>したことログ</title>
+  <title>kiri-apps</title>
   <style>
     :root{
-      --bg:#f7f9ff;
+      --bg:#f6f9ff;
       --card:#ffffffcc;
       --ink:#1b1f2a;
       --sub:#5f6b7a;
       --accent:#4b7cff;
-      --accent2:#e9f0ff;
-      --danger:#e05555;
       --line:#e7ecf6;
-      --shadow: 0 10px 30px rgba(20,30,60,.08);
-      --radius:18px;
+      --shadow:0 10px 30px rgba(20,30,60,.10);
+      --r:16px;
     }
-    *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
-      background: linear-gradient(180deg, #f7f9ff 0%, #f2f6ff 60%, #f7f9ff 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background:var(--bg);
       color:var(--ink);
     }
-    .wrap{
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 20px 14px 40px;
-    }
     header{
-      display:flex;
-      align-items:flex-end;
-      gap:12px;
-      margin: 8px 6px 10px;
+      padding:22px 18px 10px;
+      max-width:900px;
+      margin:0 auto;
     }
-    .title{
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: .02em;
+    h1{
+      margin:0;
+      font-size:22px;
       display:flex;
-      align-items:center;
       gap:10px;
+      align-items:center;
     }
     .dot{
-      width:14px;height:14px;border-radius:99px;
-      background: radial-gradient(circle at 30% 30%, #ffd26a, #ffb200);
-      box-shadow: 0 6px 14px rgba(255,178,0,.25);
+      width:10px;height:10px;border-radius:50%;
+      background:linear-gradient(135deg,#ffd36a,#ff8a6a);
       display:inline-block;
     }
-    .today{
-      font-size: 14px;
-      color: var(--sub);
-      margin-bottom: 3px;
+    .sub{
+      color:var(--sub);
+      font-size:13px;
+      margin-top:6px;
     }
-
-    .tabs{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      padding: 10px 6px 0;
-      margin-bottom: 10px;
-    }
-    .tab{
-      border:0;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: #eef3ff;
-      color: #3752a6;
-      font-weight: 700;
-      cursor:pointer;
-      transition: .15s;
-    }
-    .tab.active{
-      background: var(--accent);
-      color: white;
-      box-shadow: 0 10px 22px rgba(75,124,255,.22);
-    }
-
-    .card{
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px;
-      margin: 10px 6px;
-      backdrop-filter: blur(6px);
-    }
-
-    .sectionTitle{
-      font-weight: 800;
-      margin: 0 0 10px;
-      font-size: 14px;
-      color: var(--sub);
-    }
-
-    .presetGrid{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-bottom: 12px;
-    }
-    .presetBtn{
-      width:100%;
-      padding: 14px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: white;
-      font-weight: 800;
-      cursor:pointer;
-      transition:.12s;
-    }
-    .presetBtn:hover{ transform: translateY(-1px); }
-
-    .addRow{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      margin-top: 10px;
-      flex-wrap:wrap;
-    }
-    input[type="text"]{
-      flex:1;
-      min-width: 240px;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      outline:none;
-      font-size: 16px;
-      background: white;
-    }
-    .addBtn{
-      padding: 12px 18px;
-      border-radius: 14px;
-      border:0;
-      background: var(--accent);
-      color:white;
-      font-weight: 900;
-      cursor:pointer;
-      box-shadow: 0 10px 22px rgba(75,124,255,.22);
-    }
-    .hint{
-      margin-top: 8px;
-      color: var(--sub);
-      font-size: 12px;
-    }
-
-    .logHeader{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+    main{
+      max-width:900px;
+      margin:0 auto;
+      padding:12px 18px 40px;
+      display:grid;
       gap:12px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      padding:14px;
+    }
+    .grid{
+      display:grid;
+      gap:10px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin-top:10px;
+    }
+    a.app{
+      display:block;
+      text-decoration:none;
+      color:inherit;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      background:#fff;
+      transition:.12s transform ease, .12s box-shadow ease;
+    }
+    a.app:hover{
+      transform: translateY(-2px);
+      box-shadow:0 12px 28px rgba(20,30,60,.12);
+    }
+    .title{
+      font-weight:700;
+      margin:0 0 6px;
+      font-size:16px;
+    }
+    .desc{
+      margin:0;
+      color:var(--sub);
+      font-size:13px;
+      line-height:1.4;
+    }
+    .mini{
+      margin-top:10px;
+      display:flex;
+      gap:8px;
       flex-wrap:wrap;
     }
-    .danger{
-      padding: 10px 14px;
-      border-radius: 12px;
-      border:0;
-      background: var(--danger);
-      color:white;
-      font-weight: 900;
-      cursor:pointer;
+    .tag{
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      color:var(--sub);
+      background:#fff;
     }
-    .logList{
-      margin-top: 10px;
-      border-top: 1px dashed var(--line);
-      padding-top: 10px;
+    .note{
+      font-size:12px;
+      color:var(--sub);
+      margin-top:8px;
     }
-    .logItem{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding: 12px 10px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: white;
-      margin-bottom: 10px;
-    }
-    .logLeft{
-      display:flex;
-      flex-direction:column;
-      gap:3px;
-      min-width: 0;
-    }
-    .logText{
-      font-weight: 900;
-      font-size: 15px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .logMeta{
-      font-size: 12px;
-      color: var(--sub);
+    .btnRow{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
+      margin-top:10px;
     }
-    .delBtn{
-      border:0;
-      background: #eef1f7;
-      color:#415062;
-      font-weight: 900;
-      padding: 10px 12px;
-      border-radius: 12px;
-      cursor:pointer;
-      white-space: nowrap;
+    .btn{
+      display:inline-block;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      text-decoration:none;
+      color:var(--ink);
+      font-size:13px;
     }
-
-    .empty{
-      color: var(--sub);
-      font-size: 13px;
-      padding: 10px 2px;
+    .btn.primary{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:#fff;
+      font-weight:700;
     }
   </style>
 </head>
-
 <body>
-  <div class="wrap">
-    <header>
-      <div class="title"><span class="dot"></span>したことログ</div>
-      <div class="today" id="todayDate"></div>
-    </header>
+  <header>
+    <h1><span class="dot"></span> kiri-apps</h1>
+    <div class="sub">きりちゃん用・小さなWebアプリ置き場（GitHub Pages）</div>
+  </header>
 
-    <div class="tabs" id="tabs"></div>
+  <main>
+    <section class="card">
+      <div class="title">📌 アプリ一覧</div>
+      <div class="grid">
+        <a class="app" href="./shitakoto-log/">
+          <p class="title">🟡 したことログ</p>
+          <p class="desc">カテゴリ別に「今日したこと」をポンポン記録する</p>
+          <div class="mini">
+            <span class="tag">日付表示</span><span class="tag">全削除</span><span class="tag">ローカル保存</span>
+          </div>
+        </a>
 
-    <div class="card">
-      <div class="sectionTitle" id="catLabel"></div>
+        <a class="app" href="./adhd-quick-reset/">
+          <p class="title">🧠 ADHD クイックリセット</p>
+          <p class="desc">3分タイマー＋「次の一手」を1つだけ選ぶ</p>
+          <div class="mini">
+            <span class="tag">3分</span><span class="tag">1つ選ぶ</span><span class="tag">ログ</span>
+          </div>
+        </a>
 
-      <div class="presetGrid" id="presetGrid"></div>
+        <a class="app" href="./adhd-timer/">
+          <p class="title">⏱️ ADHD タイマー</p>
+          <p class="desc">短いタイマーで起動・集中のきっかけ作り</p>
+          <div class="mini">
+            <span class="tag">短時間</span><span class="tag">起動</span>
+          </div>
+        </a>
 
-      <div class="addRow">
-        <input id="customInput" type="text" placeholder="例：ご飯、薬、洗顔 など" />
-        <button class="addBtn" id="customAddBtn">追加</button>
+        <a class="app" href="./urge-log/">
+          <p class="title">🧾 urge-log</p>
+          <p class="desc">（フォルダがある場合）ログ系アプリ</p>
+          <div class="mini">
+            <span class="tag">ログ</span><span class="tag">保存</span>
+          </div>
+        </a>
+
+        <a class="app" href="./adhd-app/">
+          <p class="title">🧩 adhd-app</p>
+          <p class="desc">試作アプリ（内容は更新しながら育てる用）</p>
+          <div class="mini">
+            <span class="tag">試作</span><span class="tag">育成</span>
+          </div>
+        </a>
+
+        <a class="app" href="./adhd-app-1/">
+          <p class="title">🧩 adhd-app-1</p>
+          <p class="desc">試作その1（とりあえず置き場）</p>
+          <div class="mini">
+            <span class="tag">試作</span>
+          </div>
+        </a>
+
+        <a class="app" href="./adhd-app-2/">
+          <p class="title">🧩 adhd-app-2</p>
+          <p class="desc">試作その2（とりあえず置き場）</p>
+          <div class="mini">
+            <span class="tag">試作</span>
+          </div>
+        </a>
       </div>
-      <div class="hint">※ 追加した文字は「今選んでるカテゴリ」に記録されます</div>
-    </div>
 
-    <div class="card">
-      <div class="logHeader">
-        <div class="sectionTitle">今日のログ</div>
-        <button class="danger" id="clearAllBtn">全削除</button>
+      <div class="note">
+        ※リンク先が404になる場合は、そのフォルダ内に <b>index.html</b> があるか確認してね（大文字NG）
       </div>
 
-      <div class="logList" id="logList"></div>
-      <div class="empty" id="emptyText" style="display:none;">まだログがないよ 👀</div>
-    </div>
-  </div>
-
-  <script>
-    // ========= 設定 =========
-    const CATEGORIES = ["家事", "買い物", "連絡", "外出", "用事", "その他"];
-
-    // プリセット（最初から出すボタン）
-    const PRESETS = {
-      "家事": ["洗濯", "風呂", "料理", "片付け", "ゴミ出し"],
-      "買い物": ["スーパー", "ドラッグストア", "コンビニ", "ネット注文"],
-      "連絡": ["電話", "LINE返信", "メール", "予約", "連絡した"],
-      "外出": ["散歩", "通院", "断酒会", "外出した", "用事で外出"],
-      "用事": ["手続き", "支払い", "役所", "提出", "片付け（用事）"],
-      // きりちゃんの希望：その他に「ご飯・薬・洗顔」を入れる
-      "その他": ["ご飯", "薬", "洗顔"]
-    };
-
-    const STORAGE_KEY = "shitaKotoLog_v2";
-
-    // ========= 状態 =========
-    let state = {
-      currentCategory: "家事",
-      logs: [] // { id, text, category, createdAtISO }
-    };
-
-    // ========= ユーティリティ =========
-    const pad2 = (n) => String(n).padStart(2, "0");
-
-    function formatDateJP(d){
-      // 2026/02/04(水) みたいな表示
-      const y = d.getFullYear();
-      const m = pad2(d.getMonth()+1);
-      const day = pad2(d.getDate());
-      const w = ["日","月","火","水","木","金","土"][d.getDay()];
-      return `${y}/${m}/${day}(${w})`;
-    }
-
-    function formatTime(d){
-      return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-    }
-
-    function save(){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-    function load(){
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return;
-      try{
-        const parsed = JSON.parse(raw);
-        // 最低限の形だけ合わせる
-        if(parsed && typeof parsed === "object"){
-          if(Array.isArray(parsed.logs)) state.logs = parsed.logs;
-          if(typeof parsed.currentCategory === "string") state.currentCategory = parsed.currentCategory;
-        }
-      }catch(e){}
-    }
-
-    // ========= 追加/削除 =========
-    function addLog(text, category){
-      const now = new Date();
-      const item = {
-        id: cryptoRandomId(),
-        text: text,
-        category: category,
-        createdAtISO: now.toISOString()
-      };
-      state.logs.unshift(item);
-      save();
-      renderLog();
-    }
-
-    function deleteLog(id){
-      state.logs = state.logs.filter(x => x.id !== id);
-      save();
-      renderLog();
-    }
-
-    function clearAll(){
-      if(!confirm("全部消す？（元に戻せない）")) return;
-      state.logs = [];
-      save();
-      renderLog();
-    }
-
-    function cryptoRandomId(){
-      // iPhone Safariでも動く安全寄り
-      return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
-    }
-
-    // ========= UI描画 =========
-    function renderTabs(){
-      const el = document.getElementById("tabs");
-      el.innerHTML = "";
-      CATEGORIES.forEach(cat => {
-        const b = document.createElement("button");
-        b.className = "tab" + (cat === state.currentCategory ? " active" : "");
-        b.textContent = cat;
-        b.addEventListener("click", () => {
-          state.currentCategory = cat;
-          save();
-          renderTabs();
-          renderPresets();
-        });
-        el.appendChild(b);
-      });
-    }
-
-    function renderPresets(){
-      document.getElementById("catLabel").textContent = state.currentCategory;
-
-      const grid = document.getElementById("presetGrid");
-      grid.innerHTML = "";
-
-      const list = PRESETS[state.currentCategory] || [];
-      list.forEach(txt => {
-        const btn = document.createElement("button");
-        btn.className = "presetBtn";
-        btn.textContent = txt;
-        btn.addEventListener("click", () => addLog(txt, state.currentCategory));
-        grid.appendChild(btn);
-      });
-    }
-
-    function renderTodayDate(){
-      const todayEl = document.getElementById("todayDate");
-      if(!todayEl) return;
-      const d = new Date();
-      todayEl.textContent = `日付：${formatDateJP(d)}`;
-    }
-
-    function renderLog(){
-      const listEl = document.getElementById("logList");
-      const emptyEl = document.getElementById("emptyText");
-      listEl.innerHTML = "";
-
-      if(state.logs.length === 0){
-        emptyEl.style.display = "block";
-        return;
-      }
-      emptyEl.style.display = "none";
-
-      state.logs.forEach(item => {
-        const d = new Date(item.createdAtISO);
-        const dateText = formatDateJP(d);
-        const timeText = formatTime(d);
-
-        const row = document.createElement("div");
-        row.className = "logItem";
-
-        const left = document.createElement("div");
-        left.className = "logLeft";
-
-        const t = document.createElement("div");
-        t.className = "logText";
-        t.textContent = item.text;
-
-        const meta = document.createElement("div");
-        meta.className = "logMeta";
-        // ★ここで「ログ側にも日付」を表示する
-        meta.textContent = `${item.category}・${timeText}・${dateText}`;
-
-        left.appendChild(t);
-        left.appendChild(meta);
-
-        const del = document.createElement("button");
-        del.className = "delBtn";
-        del.textContent = "削除";
-        del.addEventListener("click", () => deleteLog(item.id));
-
-        row.appendChild(left);
-        row.appendChild(del);
-
-        listEl.appendChild(row);
-      });
-    }
-
-    // ========= イベント =========
-    function wire(){
-      const customInput = document.getElementById("customInput");
-      const customAddBtn = document.getElementById("customAddBtn");
-      const clearAllBtn = document.getElementById("clearAllBtn");
-
-      customAddBtn.addEventListener("click", () => {
-        const text = (customInput.value || "").trim();
-        if(!text) return;
-        addLog(text, state.currentCategory);
-        customInput.value = "";
-        customInput.focus();
-      });
-
-      customInput.addEventListener("keydown", (e) => {
-        if(e.key === "Enter"){
-          const text = (customInput.value || "").trim();
-          if(!text) return;
-          addLog(text, state.currentCategory);
-          customInput.value = "";
-        }
-      });
-
-      clearAllBtn.addEventListener("click", clearAll);
-    }
-
-    // ========= 起動 =========
-    load();
-    renderTodayDate();
-    renderTabs();
-    renderPresets();
-    renderLog();
-    wire();
-  </script>
+      <div class="btnRow">
+        <a class="btn primary" href="https://kirimoto0427.github.io/kiri-apps/">このページを開く</a>
+        <a class="btn" href="https://github.com/kirimoto0427/kiri-apps">GitHub（コード）</a>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
