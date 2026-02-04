@@ -1,1 +1,548 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🟡 楽しさ塊回収メモ</title>
+  <style>
+    :root{
+      --bg:#f6f8ff;
+      --card:#ffffffcc;
+      --ink:#111827;
+      --sub:#6b7280;
+      --line:#e6eaf6;
+      --accent:#4b7cff;
+      --accent2:#e9f0ff;
+      --danger:#e05555;
+      --shadow: 0 10px 30px rgba(20,30,60,.10);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 800px at 20% -10%, #dbe6ff 0%, transparent 60%),
+        radial-gradient(900px 600px at 90% 0%, #e9ddff 0%, transparent 55%),
+        radial-gradient(900px 700px at 60% 120%, #d9fff2 0%, transparent 55%),
+        var(--bg);
+      min-height:100vh;
+      padding:18px;
+    }
+    .wrap{max-width:820px;margin:0 auto}
+    header{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      margin-bottom:14px;
+    }
+    h1{
+      margin:0;
+      font-size:28px;
+      letter-spacing:.2px;
+      display:flex; gap:10px; align-items:center;
+    }
+    .date{
+      color:var(--sub);
+      font-size:13px;
+      margin-top:6px;
+    }
+    .pill{
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      background:rgba(255,255,255,.65); border:1px solid var(--line);
+      color:var(--sub);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+    }
+    @media (max-width: 860px){
+      .grid{grid-template-columns:1fr}
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+      backdrop-filter: blur(10px);
+    }
+    .card h2{
+      margin:0 0 10px 0; font-size:16px;
+      display:flex; align-items:center; gap:8px;
+    }
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    input, select, textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 12px;
+      background:rgba(255,255,255,.85);
+      color:var(--ink);
+      outline:none;
+      font-size:14px;
+    }
+    textarea{min-height:90px; resize:vertical}
+    .w-100{width:100%}
+    .w-50{width:calc(50% - 5px)}
+    .w-33{width:calc(33.333% - 7px)}
+    @media (max-width: 520px){
+      .w-50,.w-33{width:100%}
+    }
+    .btn{
+      border:0;
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:700;
+      cursor:pointer;
+      background:var(--accent);
+      color:#fff;
+      transition:.12s;
+    }
+    .btn:active{transform: translateY(1px)}
+    .btn-sub{
+      background:var(--accent2);
+      color:var(--accent);
+      border:1px solid #cfe0ff;
+      font-weight:800;
+    }
+    .btn-danger{
+      background:#fff;
+      border:1px solid #ffd6d6;
+      color:var(--danger);
+      font-weight:800;
+    }
+    .note{color:var(--sub); font-size:12px; margin-top:8px; line-height:1.5}
+    .list{
+      margin-top:10px;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .item{
+      background:rgba(255,255,255,.86);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px 12px;
+      display:flex; justify-content:space-between; gap:10px;
+      align-items:flex-start;
+    }
+    .item .left{min-width:0}
+    .title{
+      font-weight:900;
+      margin:0 0 4px 0;
+      display:flex; gap:8px; align-items:center;
+      flex-wrap:wrap;
+    }
+    .meta{font-size:12px; color:var(--sub); display:flex; gap:10px; flex-wrap:wrap}
+    .tag{
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:12px; padding:4px 10px; border-radius:999px;
+      background: #fff; border:1px solid var(--line); color:var(--sub);
+    }
+    .badge{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:30px; height:30px; border-radius:999px;
+      background:rgba(255,255,255,.9); border:1px solid var(--line);
+      font-size:18px;
+    }
+    .actions{display:flex; gap:8px; flex-shrink:0}
+    .actions button{
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      cursor:pointer;
+      font-weight:800;
+    }
+    .actions button.del{border-color:#ffd6d6; color:var(--danger)}
+    .summary{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;
+    }
+    .kpi{
+      flex:1;
+      min-width:160px;
+      background:rgba(255,255,255,.86);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+    }
+    .kpi .label{font-size:12px; color:var(--sub)}
+    .kpi .value{font-size:22px; font-weight:900; margin-top:2px}
+    .small{font-size:12px;color:var(--sub)}
+    .hr{height:1px;background:var(--line);margin:12px 0}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>🟡 楽しさ塊回収メモ</h1>
+        <div class="date" id="today"></div>
+      </div>
+      <div class="pill">保存：端末内だけ（localStorage）</div>
+    </header>
 
+    <div class="grid">
+      <!-- 入力 -->
+      <section class="card">
+        <h2>① いま拾った🟡をメモ</h2>
+
+        <div class="row">
+          <input class="w-100" id="text" placeholder="例：カフェの空気が良かった / 風が気持ちよかった / 猫動画で笑った" />
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <select class="w-50" id="type">
+            <option value="🟡 楽しさ">🟡 楽しさ</option>
+            <option value="🟡 小さな回復">🟡 小さな回復</option>
+            <option value="🟡 気分上がった">🟡 気分上がった</option>
+            <option value="🟡 できた">🟡 できた</option>
+            <option value="🟡 やさしさ">🟡 やさしさ</option>
+          </select>
+
+          <select class="w-50" id="place">
+            <option value="家">家</option>
+            <option value="外">外</option>
+            <option value="移動">移動</option>
+            <option value="断酒会">断酒会</option>
+            <option value="通院">通院</option>
+            <option value="その他">その他</option>
+          </select>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <select class="w-33" id="mood">
+            <option value="🙂 ふつう">🙂 ふつう</option>
+            <option value="😊 いい">😊 いい</option>
+            <option value="😌 落ち着く">😌 落ち着く</option>
+            <option value="😮‍💨 しんどい">😮‍💨 しんどい</option>
+            <option value="😵‍💫 ぐちゃぐちゃ">😵‍💫 ぐちゃぐちゃ</option>
+          </select>
+
+          <select class="w-33" id="hp">
+            <option value="HP 5">HP 5（余裕）</option>
+            <option value="HP 4">HP 4</option>
+            <option value="HP 3" selected>HP 3（普通）</option>
+            <option value="HP 2">HP 2（省エネ）</option>
+            <option value="HP 1">HP 1（限界）</option>
+          </select>
+
+          <select class="w-33" id="size">
+            <option value="小">塊サイズ：小</option>
+            <option value="中" selected>塊サイズ：中</option>
+            <option value="大">塊サイズ：大</option>
+          </select>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <textarea class="w-100" id="memo" placeholder="ひとこと（任意）：何が良かった？ どう助かった？ など"></textarea>
+        </div>
+
+        <div class="row" style="margin-top:10px; align-items:center">
+          <button class="btn w-50" id="add">追加</button>
+          <button class="btn btn-sub w-50" id="addQuick">🟡だけ追加（最短）</button>
+        </div>
+
+        <div class="note">
+          ・「🟡だけ追加」は内容が空でも保存する（とりあえず拾う用）。<br>
+          ・このメモの勝ち条件：<b>0個の日もOK</b>。ログインしてるだけで偉い。<br>
+          ・最重要ルール：<b>HPを削る回収はしない</b>。
+        </div>
+
+        <div class="hr"></div>
+
+        <h2>② ツール</h2>
+        <div class="row">
+          <button class="btn btn-sub w-50" id="export">エクスポート（JSON）</button>
+          <button class="btn btn-sub w-50" id="importBtn">インポート（JSON）</button>
+          <input type="file" id="importFile" accept="application/json" style="display:none" />
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn btn-danger w-100" id="clearAll">全削除</button>
+        </div>
+        <div class="note small">
+          ※エクスポートはバックアップ用（端末移行に便利）。<br>
+          ※インポートは「上書き」じゃなく「追加」。
+        </div>
+      </section>
+
+      <!-- 表示 -->
+      <section class="card">
+        <h2>③ 今日の回収ログ</h2>
+
+        <div class="summary">
+          <div class="kpi">
+            <div class="label">今日の🟡数</div>
+            <div class="value" id="kpiCount">0</div>
+            <div class="small" id="kpiNote">0個でもOK</div>
+          </div>
+          <div class="kpi">
+            <div class="label">いまのHP選択（最後の記録）</div>
+            <div class="value" id="kpiHp">HP 3</div>
+            <div class="small">HPを守った回収だけ🛡️</div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="row">
+          <select class="w-50" id="filterDay">
+            <option value="today" selected>今日だけ</option>
+            <option value="all">全部</option>
+          </select>
+          <select class="w-50" id="filterType">
+            <option value="all" selected>種類：全部</option>
+            <option value="🟡 楽しさ">🟡 楽しさ</option>
+            <option value="🟡 小さな回復">🟡 小さな回復</option>
+            <option value="🟡 気分上がった">🟡 気分上がった</option>
+            <option value="🟡 できた">🟡 できた</option>
+            <option value="🟡 やさしさ">🟡 やさしさ</option>
+          </select>
+        </div>
+
+        <div class="list" id="list"></div>
+
+        <div class="note small">
+          ※ログはこの端末のブラウザに保存。別端末では別データ。<br>
+          ※GitHub Pagesの更新は少し待つと反映されることある。
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const KEY = "kiri_fun_orb_log_v1";
+
+    const $ = (id)=>document.getElementById(id);
+
+    const jpDate = (d)=>{
+      const w = ["日","月","火","水","木","金","土"][d.getDay()];
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const da = String(d.getDate()).padStart(2,"0");
+      return `${y}/${m}/${da}(${w})`;
+    };
+    const hhmm = (d)=>{
+      const h = String(d.getHours()).padStart(2,"0");
+      const m = String(d.getMinutes()).padStart(2,"0");
+      return `${h}:${m}`;
+    };
+    const todayKey = ()=>{
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const da = String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${da}`;
+    };
+
+    function load(){
+      try{
+        return JSON.parse(localStorage.getItem(KEY) || "[]");
+      }catch(e){
+        return [];
+      }
+    }
+    function save(arr){
+      localStorage.setItem(KEY, JSON.stringify(arr));
+    }
+
+    function addEntry({text, type, place, mood, hp, size, memo}){
+      const now = new Date();
+      const entry = {
+        id: crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2),
+        dateKey: todayKey(),
+        dateLabel: jpDate(now),
+        time: hhmm(now),
+        text: text || "🟡",
+        type, place, mood, hp, size,
+        memo: memo || ""
+      };
+      const arr = load();
+      arr.unshift(entry);
+      save(arr);
+      render();
+    }
+
+    function removeEntry(id){
+      const arr = load().filter(x=>x.id!==id);
+      save(arr);
+      render();
+    }
+
+    function clearAll(){
+      if(!confirm("全部消す？（取り消しできない）")) return;
+      localStorage.removeItem(KEY);
+      render();
+    }
+
+    function getFiltered(){
+      const arr = load();
+      const dayMode = $("filterDay").value;
+      const typeMode = $("filterType").value;
+      const tk = todayKey();
+      return arr.filter(x=>{
+        const okDay = dayMode==="all" ? true : x.dateKey===tk;
+        const okType = typeMode==="all" ? true : x.type===typeMode;
+        return okDay && okType;
+      });
+    }
+
+    function kpis(arr){
+      const tk = todayKey();
+      const todayArr = load().filter(x=>x.dateKey===tk);
+      $("kpiCount").textContent = String(todayArr.length);
+      $("kpiNote").textContent = todayArr.length===0 ? "0個でもOK（ログイン勝ち）" : "拾えてる🟡";
+      $("kpiHp").textContent = todayArr[0]?.hp || "HP 3";
+    }
+
+    function render(){
+      const arr = getFiltered();
+      kpis(arr);
+
+      const list = $("list");
+      list.innerHTML = "";
+
+      if(arr.length===0){
+        const empty = document.createElement("div");
+        empty.className = "item";
+        empty.innerHTML = `
+          <div class="left">
+            <div class="title"><span class="badge">🟡</span> まだログがない</div>
+            <div class="meta">「0個でもOK」ルールで勝ち🙂</div>
+          </div>
+        `;
+        list.appendChild(empty);
+        return;
+      }
+
+      for(const x of arr){
+        const el = document.createElement("div");
+        el.className = "item";
+        el.innerHTML = `
+          <div class="left">
+            <div class="title">
+              <span class="badge">🟡</span>
+              <span>${escapeHtml(x.text)}</span>
+            </div>
+            <div class="meta">
+              <span>${x.type}</span>
+              <span class="tag">${x.place}</span>
+              <span class="tag">${x.mood}</span>
+              <span class="tag">${x.hp}</span>
+              <span class="tag">サイズ:${x.size}</span>
+              <span class="mono">${x.time}・${x.dateLabel}</span>
+            </div>
+            ${x.memo ? `<div class="small" style="margin-top:6px;">${escapeHtml(x.memo)}</div>` : ""}
+          </div>
+          <div class="actions">
+            <button class="del" data-del="${x.id}">削除</button>
+          </div>
+        `;
+        list.appendChild(el);
+      }
+
+      // bind delete
+      list.querySelectorAll("button[data-del]").forEach(btn=>{
+        btn.addEventListener("click", ()=>removeEntry(btn.getAttribute("data-del")));
+      });
+    }
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#39;");
+    }
+
+    // Export / Import
+    function exportJSON(){
+      const data = load();
+      const blob = new Blob([JSON.stringify({version:1, exportedAt: new Date().toISOString(), data}, null, 2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "kiri_fun_orb_log_backup.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function importJSON(file){
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        try{
+          const obj = JSON.parse(reader.result);
+          const incoming = Array.isArray(obj) ? obj : (obj.data || []);
+          if(!Array.isArray(incoming)) throw new Error("invalid");
+          const current = load();
+          const ids = new Set(current.map(x=>x.id));
+          const merged = [...incoming.filter(x=>x && x.id && !ids.has(x.id)), ...current];
+          save(merged);
+          alert(`インポート完了：${incoming.length}件（追加は重複除外）`);
+          render();
+        }catch(e){
+          alert("読み込み失敗：JSON形式が違うかも");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Init UI
+    (function init(){
+      const d = new Date();
+      $("today").textContent = `日付：${jpDate(d)}`;
+
+      $("add").addEventListener("click", ()=>{
+        const text = $("text").value.trim();
+        if(!text){
+          alert("内容が空。🟡だけ追加なら右のボタン！");
+          return;
+        }
+        addEntry({
+          text,
+          type: $("type").value,
+          place: $("place").value,
+          mood: $("mood").value,
+          hp: $("hp").value,
+          size: $("size").value,
+          memo: $("memo").value.trim()
+        });
+        $("text").value = "";
+        $("memo").value = "";
+      });
+
+      $("addQuick").addEventListener("click", ()=>{
+        addEntry({
+          text: $("text").value.trim() || "🟡",
+          type: $("type").value,
+          place: $("place").value,
+          mood: $("mood").value,
+          hp: $("hp").value,
+          size: $("size").value,
+          memo: $("memo").value.trim()
+        });
+        $("text").value = "";
+        $("memo").value = "";
+      });
+
+      $("clearAll").addEventListener("click", clearAll);
+
+      $("filterDay").addEventListener("change", render);
+      $("filterType").addEventListener("change", render);
+
+      $("export").addEventListener("click", exportJSON);
+
+      $("importBtn").addEventListener("click", ()=> $("importFile").click());
+      $("importFile").addEventListener("change", (e)=>{
+        const file = e.target.files?.[0];
+        if(file) importJSON(file);
+        e.target.value = "";
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
