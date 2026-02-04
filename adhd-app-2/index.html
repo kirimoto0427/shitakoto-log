@@ -1,1 +1,148 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>停止回復ログ</title>
 
+<style>
+body{
+font-family:system-ui;
+text-align:center;
+padding:24px;
+background:#f7f8ff;
+}
+
+button{
+margin:6px;
+padding:12px 16px;
+font-size:16px;
+border-radius:14px;
+border:none;
+background:#dfe6ff;
+}
+
+#choices{
+margin-top:20px;
+max-width:420px;
+margin-left:auto;
+margin-right:auto;
+}
+
+.item{
+background:white;
+padding:12px;
+border-radius:12px;
+margin-bottom:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.05);
+cursor:pointer;
+}
+
+#log{
+margin-top:28px;
+max-width:420px;
+margin-left:auto;
+margin-right:auto;
+text-align:left;
+}
+
+.logItem{
+background:#fff;
+padding:10px;
+border-radius:12px;
+margin-bottom:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.05);
+}
+
+.clearBtn{
+background:#ffdede;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🟡 停止回復ログ</h2>
+
+<!-- 状態 -->
+<button onclick="showChoices('hp')">HP低下</button>
+<button onclick="showChoices('loop')">思考ループ</button>
+<button onclick="showChoices('rum')">反芻</button>
+<button onclick="showChoices('over')">刺激過多</button>
+<button onclick="showChoices('anx')">不安の思考</button>
+
+<div id="choices"></div>
+
+<button class="clearBtn" onclick="clearLog()">ログ全消去</button>
+
+<div id="log"></div>
+
+<script>
+
+const data = {
+hp:["水を一口飲む","横になる30秒","深呼吸3回"],
+loop:["伸びる","トイレ行く","窓開ける"],
+rum:["ラベル押す","画面閉じる","5歩歩く"],
+over:["音オフ","明るさ下げる","目閉じる"],
+anx:["事実1個言う","体感1個言う","肩回す"]
+};
+
+let currentType = "";
+
+function showChoices(type){
+currentType = type;
+const list = data[type];
+
+let html = "";
+list.forEach(text=>{
+html += `<div class="item" onclick="saveLog('${text}')">${text}</div>`;
+});
+
+document.getElementById("choices").innerHTML = html;
+}
+
+function saveLog(action){
+
+const now = new Date();
+
+const date =
+now.getFullYear() + "/" +
+(now.getMonth()+1) + "/" +
+now.getDate();
+
+const time =
+String(now.getHours()).padStart(2,"0") + ":" +
+String(now.getMinutes()).padStart(2,"0");
+
+const text = `${date} ${time} → ${action}`;
+
+let logs = JSON.parse(localStorage.getItem("recoverLogs") || "[]");
+logs.unshift(text);
+
+localStorage.setItem("recoverLogs", JSON.stringify(logs));
+
+renderLog();
+}
+
+function renderLog(){
+let logs = JSON.parse(localStorage.getItem("recoverLogs") || "[]");
+
+let html = "";
+logs.forEach(l=>{
+html += `<div class="logItem">${l}</div>`;
+});
+
+document.getElementById("log").innerHTML = html;
+}
+
+function clearLog(){
+localStorage.removeItem("recoverLogs");
+renderLog();
+}
+
+renderLog();
+
+</script>
+
+</body>
+</html>
