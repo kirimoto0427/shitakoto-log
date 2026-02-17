@@ -82,7 +82,9 @@
         0 8px 60px rgba(255,160,200,.12),
         inset 0 1px 0 rgba(255,255,255,.5);
       animation:clock-float 6s ease-in-out infinite;
+      transition:opacity .4s ease;
     }
+    #clock.clock-hidden{opacity:0;pointer-events:none}
     @keyframes clock-float{
       0%,100%{transform:translate(-50%,-50%) translateY(0)}
       50%{transform:translate(-50%,-50%) translateY(-6px)}
@@ -129,6 +131,84 @@
     .theme-night #clock-date{color:rgba(200,210,255,.45)}
     .theme-night #clock-greeting{color:rgba(140,160,255,.45)}
 
+    /* === Settings panel === */
+    #settings-overlay{
+      position:fixed;inset:0;z-index:50;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(0,0,0,.2);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+      opacity:0;pointer-events:none;transition:opacity .35s ease;
+    }
+    #settings-overlay.open{opacity:1;pointer-events:auto}
+
+    #settings{
+      width:min(360px,90vw);max-height:80vh;overflow-y:auto;
+      background:rgba(255,255,255,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      border:1.5px solid rgba(255,255,255,.6);border-radius:28px;
+      padding:28px 24px 20px;
+      box-shadow:0 12px 48px rgba(255,180,210,.2),0 2px 12px rgba(0,0,0,.06);
+      transform:translateY(20px) scale(.96);transition:transform .35s ease;
+    }
+    #settings-overlay.open #settings{transform:translateY(0) scale(1)}
+
+    .theme-night #settings{
+      background:rgba(25,25,50,.85);border-color:rgba(100,140,255,.2);
+      box-shadow:0 12px 48px rgba(60,80,180,.2),0 2px 12px rgba(0,0,0,.15);
+    }
+
+    #settings-title{
+      font-size:16px;font-weight:600;letter-spacing:.06em;text-align:center;
+      color:rgba(180,100,140,.85);margin-bottom:20px;
+    }
+    .theme-night #settings-title{color:rgba(160,170,220,.8)}
+
+    .s-row{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 0;border-bottom:1px solid rgba(0,0,0,.05);
+    }
+    .s-row:last-child{border-bottom:none}
+    .theme-night .s-row{border-bottom-color:rgba(255,255,255,.06)}
+
+    .s-label{font-size:13px;font-weight:500;color:rgba(80,60,80,.75);letter-spacing:.03em}
+    .theme-night .s-label{color:rgba(200,200,230,.6)}
+
+    /* toggle switch */
+    .toggle{
+      position:relative;width:44px;height:24px;border-radius:12px;
+      background:rgba(0,0,0,.1);border:none;cursor:pointer;transition:.3s;flex-shrink:0;
+    }
+    .toggle::after{
+      content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;
+      border-radius:50%;background:#fff;transition:.3s;
+      box-shadow:0 1px 4px rgba(0,0,0,.1);
+    }
+    .toggle.on{background:linear-gradient(135deg,#ffb8cc,#ffa0c0)}
+    .toggle.on::after{left:23px}
+    .theme-night .toggle{background:rgba(255,255,255,.1)}
+    .theme-night .toggle.on{background:linear-gradient(135deg,#6080d0,#8090e0)}
+
+    /* dropdown select */
+    .s-select{
+      font-size:12px;padding:5px 10px;border-radius:12px;border:1px solid rgba(0,0,0,.1);
+      background:rgba(255,255,255,.6);color:rgba(80,60,80,.85);cursor:pointer;
+      font-family:inherit;outline:none;
+    }
+    .s-select:focus{border-color:rgba(255,160,200,.5)}
+    .theme-night .s-select{
+      background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:rgba(200,200,230,.8);
+    }
+
+    #settings-close{
+      display:block;margin:18px auto 0;padding:8px 28px;border:none;border-radius:999px;
+      background:linear-gradient(135deg,rgba(255,184,204,.6),rgba(255,160,192,.4));
+      color:rgba(160,80,120,.8);font-size:13px;font-weight:600;letter-spacing:.06em;
+      cursor:pointer;transition:.25s;
+    }
+    #settings-close:hover{transform:scale(1.05);background:linear-gradient(135deg,rgba(255,184,204,.8),rgba(255,160,192,.6))}
+    .theme-night #settings-close{
+      background:linear-gradient(135deg,rgba(80,100,180,.4),rgba(60,80,160,.3));
+      color:rgba(180,190,230,.8);
+    }
+
     /* fullscreen */
     .fullscreen #panel{bottom:30px}
   </style>
@@ -152,12 +232,74 @@
     <button class="theme-btn" data-theme="night" title="Night"></button>
     <button class="theme-btn" data-theme="lavender" title="Lavender"></button>
     <span class="sep"></span>
+    <button class="icon-btn" id="btn-settings" title="Settings">&#x2699;</button>
     <button class="icon-btn" id="btn-fullscreen" title="Fullscreen">&#x26F6;</button>
     <button class="icon-btn" id="btn-hide" title="Hide UI">&#x25BD;</button>
   </div>
 
+  <!-- Settings overlay -->
+  <div id="settings-overlay">
+    <div id="settings">
+      <div id="settings-title">Settings</div>
+      <div class="s-row">
+        <span class="s-label">Show Clock</span>
+        <button class="toggle on" id="s-clock"></button>
+      </div>
+      <div class="s-row">
+        <span class="s-label">Auto-hide UI Bar</span>
+        <button class="toggle on" id="s-autohide"></button>
+      </div>
+      <div class="s-row">
+        <span class="s-label">Particles</span>
+        <button class="toggle on" id="s-particles"></button>
+      </div>
+      <div class="s-row">
+        <span class="s-label">Particle Density</span>
+        <select class="s-select" id="s-density">
+          <option value="0">Low</option>
+          <option value="1" selected>Medium</option>
+          <option value="2">High</option>
+        </select>
+      </div>
+      <div class="s-row">
+        <span class="s-label">FPS Cap</span>
+        <select class="s-select" id="s-fps">
+          <option value="0">30</option>
+          <option value="1" selected>60</option>
+        </select>
+      </div>
+      <button id="settings-close">Close</button>
+    </div>
+  </div>
+
   <script>
   (() => {
+    /* ======== Settings state ======== */
+    const DENSITY_MAP = [18, 35, 60];
+    const FPS_MAP = [30, 60];
+    const THEME_NAMES = ['sakura','sky','sunset','forest','night','lavender'];
+
+    const cfg = {
+      showClock: true,
+      autoHideUI: true,
+      particlesOn: true,
+      particleDensity: 1,
+      theme: 0,
+      fpsCap: 1,
+    };
+
+    // Load from localStorage (fallback when not in Lively)
+    function loadSettings() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('cw-settings'));
+        if (saved) Object.assign(cfg, saved);
+      } catch(_) {}
+    }
+    function saveSettings() {
+      localStorage.setItem('cw-settings', JSON.stringify(cfg));
+    }
+    loadSettings();
+
     /* ======== Theme ======== */
     const THEMES = {
       sakura:   { particles: ['🌸','💮','🩷','✿','❀'], bgAlpha: .12 },
@@ -168,13 +310,17 @@
       lavender: { particles: ['💜','🦄','🔮','🪻','💐'], bgAlpha: .10 },
     };
 
-    let currentTheme = localStorage.getItem('cw-theme') || 'sakura';
+    let currentTheme = THEME_NAMES[cfg.theme] || 'sakura';
     const body = document.body;
 
     function applyTheme(name) {
+      // Preserve fullscreen class
+      const isFull = body.classList.contains('fullscreen');
       body.className = 'theme-' + name;
+      if (isFull) body.classList.add('fullscreen');
       currentTheme = name;
-      localStorage.setItem('cw-theme', name);
+      cfg.theme = THEME_NAMES.indexOf(name);
+      saveSettings();
       document.querySelectorAll('.theme-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.theme === name);
       });
@@ -188,6 +334,7 @@
     applyTheme(currentTheme);
 
     /* ======== Clock ======== */
+    const clockEl = document.getElementById('clock');
     const DAYS = ['日','月','火','水','木','金','土'];
     function getGreeting(h) {
       if (h >= 5 && h < 10) return 'Good Morning';
@@ -198,6 +345,7 @@
       return 'Good Night';
     }
     function updateClock() {
+      if (!cfg.showClock) return;
       const now = new Date();
       const h = String(now.getHours()).padStart(2,'0');
       const m = String(now.getMinutes()).padStart(2,'0');
@@ -210,6 +358,11 @@
       document.getElementById('clock-date').textContent = mo + '/' + d + ' (' + day + ')';
       document.getElementById('clock-greeting').textContent = getGreeting(now.getHours());
     }
+    function applyClockVisibility() {
+      clockEl.classList.toggle('clock-hidden', !cfg.showClock);
+      if (cfg.showClock) updateClock();
+    }
+    applyClockVisibility();
     updateClock();
     setInterval(updateClock, 1000);
 
@@ -218,7 +371,7 @@
     const ctx = canvas.getContext('2d');
     let W, H;
     let particles = [];
-    const PARTICLE_COUNT = 35;
+    let particleCount = DENSITY_MAP[cfg.particleDensity];
 
     function resize() {
       W = canvas.width = window.innerWidth;
@@ -265,22 +418,40 @@
     }
 
     function resetParticles() {
+      particleCount = DENSITY_MAP[cfg.particleDensity];
       particles = [];
-      for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+      if (!cfg.particlesOn) return;
+      for (let i = 0; i < particleCount; i++) particles.push(new Particle());
     }
 
-    function animate() {
+    /* ======== Animation loop with FPS cap + visibility pause ======== */
+    let animId = null;
+    let lastFrame = 0;
+    let paused = false;
+
+    function animate(ts) {
+      animId = requestAnimationFrame(animate);
+      if (paused) return;
+      const interval = 1000 / FPS_MAP[cfg.fpsCap];
+      if (ts - lastFrame < interval) return;
+      lastFrame = ts;
       ctx.clearRect(0, 0, W, H);
-      for (const p of particles) { p.update(); p.draw(); }
-      requestAnimationFrame(animate);
+      if (cfg.particlesOn) {
+        for (const p of particles) { p.update(); p.draw(); }
+      }
     }
     resetParticles();
-    animate();
+    animId = requestAnimationFrame(animate);
+
+    // Pause when tab/wallpaper hidden
+    document.addEventListener('visibilitychange', () => {
+      paused = document.visibilityState === 'hidden';
+    });
 
     /* ======== Click sparkle ======== */
     const CLICK_EMOJIS = ['💖','✨','🌟','💫','⭐','🩷','💜','💙','💚','🧡'];
     document.addEventListener('click', e => {
-      if (e.target.closest('#panel')) return;
+      if (e.target.closest('#panel') || e.target.closest('#settings-overlay')) return;
       for (let i = 0; i < 4; i++) {
         const el = document.createElement('div');
         el.className = 'sparkle';
@@ -307,22 +478,125 @@
       if (!document.fullscreenElement) body.classList.remove('fullscreen');
     });
 
-    /* ======== Hide UI ======== */
+    /* ======== Auto-hide UI ======== */
     const panel = document.getElementById('panel');
     let hideTimeout;
+    function startAutoHide() {
+      clearTimeout(hideTimeout);
+      if (cfg.autoHideUI) {
+        hideTimeout = setTimeout(() => panel.classList.add('hidden'), 6000);
+      }
+    }
     document.getElementById('btn-hide').addEventListener('click', () => {
       panel.classList.add('hidden');
     });
     document.addEventListener('mousemove', () => {
       panel.classList.remove('hidden');
-      clearTimeout(hideTimeout);
-      hideTimeout = setTimeout(() => panel.classList.add('hidden'), 6000);
+      startAutoHide();
     });
     document.addEventListener('touchstart', () => {
       if (panel.classList.contains('hidden')) {
         panel.classList.remove('hidden');
-        clearTimeout(hideTimeout);
-        hideTimeout = setTimeout(() => panel.classList.add('hidden'), 6000);
+        startAutoHide();
+      }
+    });
+    if (cfg.autoHideUI) startAutoHide();
+
+    /* ======== Settings panel ======== */
+    const overlay = document.getElementById('settings-overlay');
+    const sClock = document.getElementById('s-clock');
+    const sAutohide = document.getElementById('s-autohide');
+    const sParticles = document.getElementById('s-particles');
+    const sDensity = document.getElementById('s-density');
+    const sFps = document.getElementById('s-fps');
+
+    // Sync UI to current cfg
+    function syncSettingsUI() {
+      sClock.classList.toggle('on', cfg.showClock);
+      sAutohide.classList.toggle('on', cfg.autoHideUI);
+      sParticles.classList.toggle('on', cfg.particlesOn);
+      sDensity.value = cfg.particleDensity;
+      sFps.value = cfg.fpsCap;
+    }
+    syncSettingsUI();
+
+    document.getElementById('btn-settings').addEventListener('click', () => {
+      syncSettingsUI();
+      overlay.classList.add('open');
+    });
+    document.getElementById('settings-close').addEventListener('click', () => {
+      overlay.classList.remove('open');
+    });
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+
+    // Toggle helpers
+    function toggleBtn(el, key) {
+      el.addEventListener('click', () => {
+        cfg[key] = !cfg[key];
+        el.classList.toggle('on', cfg[key]);
+        applySetting(key, cfg[key]);
+        saveSettings();
+      });
+    }
+    toggleBtn(sClock, 'showClock');
+    toggleBtn(sAutohide, 'autoHideUI');
+    toggleBtn(sParticles, 'particlesOn');
+
+    sDensity.addEventListener('change', () => {
+      cfg.particleDensity = parseInt(sDensity.value);
+      applySetting('particleDensity', cfg.particleDensity);
+      saveSettings();
+    });
+    sFps.addEventListener('change', () => {
+      cfg.fpsCap = parseInt(sFps.value);
+      saveSettings();
+    });
+
+    /* ======== applySetting (shared by UI + Lively) ======== */
+    function applySetting(key, val) {
+      switch (key) {
+        case 'showClock':
+          cfg.showClock = val;
+          applyClockVisibility();
+          break;
+        case 'autoHideUI':
+          cfg.autoHideUI = val;
+          if (val) startAutoHide();
+          else { clearTimeout(hideTimeout); panel.classList.remove('hidden'); }
+          break;
+        case 'particlesOn':
+          cfg.particlesOn = val;
+          if (!val) { particles = []; ctx.clearRect(0, 0, W, H); }
+          else resetParticles();
+          break;
+        case 'particleDensity':
+          cfg.particleDensity = val;
+          if (cfg.particlesOn) resetParticles();
+          break;
+        case 'theme':
+          cfg.theme = val;
+          applyTheme(THEME_NAMES[val] || 'sakura');
+          break;
+        case 'fpsCap':
+          cfg.fpsCap = val;
+          break;
+      }
+      saveSettings();
+      syncSettingsUI();
+    }
+
+    /* ======== Lively Wallpaper integration ======== */
+    // Lively sends property changes via window.livelyPropertyListener
+    window.livelyPropertyListener = function(name, val) {
+      applySetting(name, val);
+    };
+
+    // Also listen for postMessage (some Lively versions use this)
+    window.addEventListener('message', e => {
+      if (e.data && typeof e.data === 'object' && e.data.livelyProperty) {
+        applySetting(e.data.livelyProperty, e.data.value);
       }
     });
 

@@ -1,0 +1,35 @@
+{
+  "showClock": {
+    "text": "Show Clock",
+    "type": "checkbox",
+    "value": true
+  },
+  "autoHideUI": {
+    "text": "Auto-hide UI Bar",
+    "type": "checkbox",
+    "value": true
+  },
+  "particlesOn": {
+    "text": "Show Particles",
+    "type": "checkbox",
+    "value": true
+  },
+  "particleDensity": {
+    "text": "Particle Density",
+    "type": "dropdown",
+    "value": 1,
+    "items": ["Low", "Medium", "High"]
+  },
+  "theme": {
+    "text": "Theme",
+    "type": "dropdown",
+    "value": 0,
+    "items": ["Sakura", "Sky", "Sunset", "Forest", "Night", "Lavender"]
+  },
+  "fpsCap": {
+    "text": "FPS Cap",
+    "type": "dropdown",
+    "value": 1,
+    "items": ["30", "60"]
+  }
+}
