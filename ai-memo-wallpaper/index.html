@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>AI メモ壁紙</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Yu Gothic",system-ui,sans-serif;
+}
+body{
+  background:linear-gradient(160deg,#0d0d1a 0%,#1a1525 40%,#12101e 100%);
+  color:#e8e4f0;
+  cursor:default;
+  user-select:none;-webkit-user-select:none;
+}
+
+/* ========= 背景キャンバス ========= */
+#canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ========= メモカード ========= */
+#memo-card{
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  z-index:10;
+  width:min(420px, 90vw);
+  background:rgba(30,26,44,.65);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(180,160,220,.15);
+  border-radius:20px;
+  padding:24px 22px 20px;
+  box-shadow:0 12px 48px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+}
+
+/* ヘッダー */
+.card-header{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:16px;
+}
+.card-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:linear-gradient(135deg,#c9a0dc,#8b6aae);
+  box-shadow:0 0 10px rgba(180,140,220,.4);
+}
+.card-title{
+  font-size:15px;font-weight:600;
+  letter-spacing:.04em;
+  color:#d4c8e8;
+}
+
+/* テキストエリア */
+#memo{
+  width:100%;
+  height:180px;
+  background:rgba(20,16,32,.5);
+  border:1px solid rgba(160,140,200,.18);
+  border-radius:14px;
+  padding:14px 16px;
+  color:#e0dce8;
+  font-size:14px;
+  line-height:1.7;
+  resize:none;
+  outline:none;
+  font-family:inherit;
+  user-select:text;-webkit-user-select:text;
+  transition:border-color .2s;
+}
+#memo::placeholder{color:rgba(180,170,200,.4)}
+#memo:focus{border-color:rgba(180,140,220,.4)}
+
+/* ボタン行 */
+.btn-row{
+  display:flex;gap:10px;
+  margin-top:14px;
+}
+.btn{
+  flex:1;
+  padding:10px 0;
+  border:none;border-radius:999px;
+  font-size:13px;font-weight:600;
+  letter-spacing:.03em;
+  cursor:pointer;
+  transition:transform .12s, box-shadow .2s;
+  user-select:none;
+}
+.btn:active{transform:scale(.97)}
+
+.btn-save{
+  background:linear-gradient(135deg,#8b6aae,#6a4c93);
+  color:#f0eaf8;
+  box-shadow:0 4px 18px rgba(100,60,160,.35);
+}
+.btn-save:hover{box-shadow:0 6px 24px rgba(100,60,160,.5)}
+
+.btn-copy{
+  background:rgba(60,50,80,.5);
+  color:#c8bede;
+  border:1px solid rgba(160,140,200,.2);
+}
+.btn-copy:hover{background:rgba(70,58,95,.6)}
+
+/* トースト */
+#toast{
+  position:fixed;
+  bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  z-index:100;
+  background:rgba(40,32,60,.85);
+  backdrop-filter:blur(10px);
+  color:#d4c8e8;
+  font-size:13px;
+  padding:8px 20px;
+  border-radius:999px;
+  border:1px solid rgba(160,140,200,.2);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s, transform .3s;
+}
+#toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+/* 時計 */
+#clock{
+  position:fixed;
+  top:24px;right:28px;
+  z-index:5;
+  text-align:right;
+  color:rgba(200,190,220,.35);
+  font-size:13px;
+  letter-spacing:.03em;
+  pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div id="clock"></div>
+
+<div id="memo-card">
+  <div class="card-header">
+    <span class="card-dot"></span>
+    <span class="card-title">memo</span>
+  </div>
+  <textarea id="memo" placeholder="ここにメモを書く..."></textarea>
+  <div class="btn-row">
+    <button class="btn btn-save" id="btnSave">保存</button>
+    <button class="btn btn-copy" id="btnCopy">コピー</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(() => {
+
+// ========= 設定 =========
+const STORAGE_KEY = "aiMemoWallpaper_v1";
+const PARTICLE_COUNT = 18;
+
+// ========= DOM =========
+const $ = (id) => document.getElementById(id);
+const memo = $("memo");
+const toast = $("toast");
+
+// ========= ユーティリティ =========
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 1600);
+}
+
+// ========= 保存・読込 =========
+function save() {
+  localStorage.setItem(STORAGE_KEY, memo.value);
+}
+
+function load() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (data !== null) memo.value = data;
+}
+
+// ========= イベント =========
+$("btnSave").onclick = () => {
+  save();
+  showToast("保存しました");
+};
+
+$("btnCopy").onclick = () => {
+  if (!memo.value.trim()) {
+    showToast("メモが空です");
+    return;
+  }
+  navigator.clipboard.writeText(memo.value).then(() => {
+    showToast("コピーしました");
+  }).catch(() => {
+    showToast("コピーに失敗しました");
+  });
+};
+
+// ========= 時計 =========
+const DAYS = ["日","月","火","水","木","金","土"];
+
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, "0");
+  const m = String(now.getMinutes()).padStart(2, "0");
+  const mo = now.getMonth() + 1;
+  const d = now.getDate();
+  const day = DAYS[now.getDay()];
+  $("clock").textContent = `${mo}/${d} (${day})  ${h}:${m}`;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+// ========= パーティクル（低負荷） =========
+const canvas = $("canvas");
+const ctx = canvas.getContext("2d");
+let W, H;
+let particles = [];
+
+function resize() {
+  W = canvas.width = innerWidth;
+  H = canvas.height = innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+class Particle {
+  constructor(init) {
+    this.reset(init);
+  }
+  reset(init) {
+    this.x = Math.random() * W;
+    this.y = init ? Math.random() * H : -10;
+    this.vy = 0.15 + Math.random() * 0.35;
+    this.r = 1 + Math.random() * 2;
+    this.alpha = 0.08 + Math.random() * 0.18;
+  }
+  update() {
+    this.y += this.vy;
+    if (this.y > H + 10) this.reset(false);
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(180,160,220,${this.alpha})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  particles.push(new Particle(true));
+}
+
+function animate() {
+  ctx.clearRect(0, 0, W, H);
+  for (let i = 0; i < particles.length; i++) {
+    particles[i].update();
+    particles[i].draw();
+  }
+  requestAnimationFrame(animate);
+}
+
+// ========= 起動 =========
+load();
+animate();
+
+})();
+</script>
+
+</body>
+</html>
