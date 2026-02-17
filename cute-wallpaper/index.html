@@ -72,17 +72,62 @@
     #clock{
       position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;
       text-align:center;pointer-events:none;
+      padding:clamp(20px,4vw,40px) clamp(30px,6vw,64px);
+      border-radius:clamp(24px,4vw,40px);
+      background:radial-gradient(ellipse at 50% 40%,rgba(255,255,255,.35) 0%,rgba(255,220,240,.2) 50%,rgba(255,255,255,.08) 100%);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      border:1.5px solid rgba(255,255,255,.45);
+      box-shadow:
+        0 4px 30px rgba(255,182,210,.25),
+        0 8px 60px rgba(255,160,200,.12),
+        inset 0 1px 0 rgba(255,255,255,.5);
+      animation:clock-float 6s ease-in-out infinite;
     }
+    @keyframes clock-float{
+      0%,100%{transform:translate(-50%,-50%) translateY(0)}
+      50%{transform:translate(-50%,-50%) translateY(-6px)}
+    }
+
     #clock-time{
-      font-size:clamp(48px,12vw,120px);font-weight:200;letter-spacing:.04em;
-      color:rgba(255,255,255,.85);text-shadow:0 2px 20px rgba(0,0,0,.06);
+      font-size:clamp(52px,13vw,128px);font-weight:200;letter-spacing:.05em;
+      color:rgba(255,255,255,.95);
+      text-shadow:
+        0 0 20px rgba(255,200,220,.5),
+        0 0 50px rgba(255,180,210,.2),
+        0 2px 8px rgba(0,0,0,.04);
+    }
+    #clock-sec{
+      display:inline-block;
+      font-size:clamp(22px,5vw,48px);font-weight:300;
+      color:rgba(255,255,255,.5);
+      vertical-align:super;margin-left:4px;
+      letter-spacing:.02em;
     }
     #clock-date{
-      font-size:clamp(14px,3vw,22px);font-weight:400;letter-spacing:.08em;
-      color:rgba(255,255,255,.6);margin-top:4px;
+      font-size:clamp(13px,2.8vw,20px);font-weight:400;letter-spacing:.12em;
+      color:rgba(255,255,255,.65);margin-top:clamp(4px,1vw,10px);
     }
-    .theme-night #clock-time{color:rgba(255,255,255,.7)}
-    .theme-night #clock-date{color:rgba(255,255,255,.4)}
+    #clock-greeting{
+      font-size:clamp(11px,2.2vw,16px);font-weight:400;letter-spacing:.1em;
+      color:rgba(255,210,230,.7);margin-top:clamp(2px,.6vw,6px);
+    }
+
+    /* night theme overrides */
+    .theme-night #clock{
+      background:radial-gradient(ellipse at 50% 40%,rgba(30,40,80,.5) 0%,rgba(15,20,50,.35) 50%,rgba(10,10,30,.2) 100%);
+      border-color:rgba(100,140,255,.2);
+      box-shadow:
+        0 4px 30px rgba(80,100,200,.2),
+        0 8px 60px rgba(60,80,180,.1),
+        inset 0 1px 0 rgba(255,255,255,.1);
+    }
+    .theme-night #clock-time{
+      color:rgba(200,210,255,.8);
+      text-shadow:0 0 20px rgba(100,140,255,.35),0 0 50px rgba(80,120,255,.15),0 2px 8px rgba(0,0,0,.1);
+    }
+    .theme-night #clock-sec{color:rgba(180,200,255,.35)}
+    .theme-night #clock-date{color:rgba(200,210,255,.45)}
+    .theme-night #clock-greeting{color:rgba(140,160,255,.45)}
 
     /* fullscreen */
     .fullscreen #panel{bottom:30px}
@@ -94,8 +139,9 @@
   <canvas id="canvas"></canvas>
 
   <div id="clock">
-    <div id="clock-time"></div>
+    <div id="clock-time"><span id="clock-hm"></span><span id="clock-sec"></span></div>
     <div id="clock-date"></div>
+    <div id="clock-greeting"></div>
   </div>
 
   <div id="panel">
@@ -143,18 +189,29 @@
 
     /* ======== Clock ======== */
     const DAYS = ['日','月','火','水','木','金','土'];
+    function getGreeting(h) {
+      if (h >= 5 && h < 10) return 'Good Morning';
+      if (h >= 10 && h < 12) return 'Have a Nice Day';
+      if (h >= 12 && h < 14) return 'Lunch Time';
+      if (h >= 14 && h < 17) return 'Good Afternoon';
+      if (h >= 17 && h < 21) return 'Good Evening';
+      return 'Good Night';
+    }
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2,'0');
       const m = String(now.getMinutes()).padStart(2,'0');
-      document.getElementById('clock-time').textContent = h + ':' + m;
+      const s = String(now.getSeconds()).padStart(2,'0');
+      document.getElementById('clock-hm').textContent = h + ':' + m;
+      document.getElementById('clock-sec').textContent = s;
       const mo = now.getMonth()+1;
       const d = now.getDate();
       const day = DAYS[now.getDay()];
       document.getElementById('clock-date').textContent = mo + '/' + d + ' (' + day + ')';
+      document.getElementById('clock-greeting').textContent = getGreeting(now.getHours());
     }
     updateClock();
-    setInterval(updateClock, 10000);
+    setInterval(updateClock, 1000);
 
     /* ======== Canvas particles ======== */
     const canvas = document.getElementById('canvas');
