@@ -1,101 +1,306 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Desktop Hub</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>デスクトップ Hub</title>
+  <style>
+    :root{
+      --bg:#0e1117;
+      --card:rgba(255,255,255,.06);
+      --card-border:rgba(255,255,255,.10);
+      --ink:#e6edf3;
+      --sub:#8b949e;
+      --accent:#58a6ff;
+      --accent-glow:rgba(88,166,255,.15);
+      --shadow:0 8px 32px rgba(0,0,0,.4);
+      --radius:16px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
 
-<style>
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-background:linear-gradient(160deg,#0f172a,#020617);
-color:white;
-display:flex;
-align-items:center;
-justify-content:center;
-height:100vh;
-}
+    /* ========= 背景グロー ========= */
+    body::before{
+      content:"";
+      position:fixed;
+      top:-30%;left:-10%;
+      width:60%;height:60%;
+      background:radial-gradient(circle,rgba(88,166,255,.08) 0%,transparent 70%);
+      pointer-events:none;
+      z-index:0;
+    }
+    body::after{
+      content:"";
+      position:fixed;
+      bottom:-20%;right:-10%;
+      width:50%;height:50%;
+      background:radial-gradient(circle,rgba(139,92,246,.06) 0%,transparent 70%);
+      pointer-events:none;
+      z-index:0;
+    }
 
-.card{
-background:rgba(255,255,255,0.06);
-backdrop-filter:blur(20px);
-padding:24px;
-border-radius:20px;
-width:340px;
-box-shadow:0 20px 60px rgba(0,0,0,.5);
-}
+    .wrap{
+      position:relative;
+      z-index:1;
+      max-width:720px;
+      margin:0 auto;
+      padding:24px 16px 60px;
+    }
 
-h1{
-margin:0 0 12px 0;
-font-weight:400;
-}
+    /* ========= 時計 ========= */
+    .clock-section{
+      text-align:center;
+      padding:32px 0 20px;
+    }
+    .clock{
+      font-size:64px;
+      font-weight:200;
+      letter-spacing:4px;
+      line-height:1;
+      background:linear-gradient(135deg,#e6edf3,#58a6ff);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .clock-date{
+      margin-top:8px;
+      font-size:15px;
+      color:var(--sub);
+      letter-spacing:1px;
+    }
 
-textarea{
-width:100%;
-height:90px;
-border-radius:10px;
-border:none;
-padding:10px;
-background:rgba(255,255,255,.08);
-color:white;
-}
+    /* ========= カード共通 ========= */
+    .card{
+      background:var(--card);
+      border:1px solid var(--card-border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      padding:20px;
+      margin-bottom:16px;
+    }
+    .card h2{
+      font-size:14px;
+      font-weight:600;
+      color:var(--sub);
+      text-transform:uppercase;
+      letter-spacing:1.5px;
+      margin-bottom:14px;
+    }
 
-button{
-margin-top:10px;
-width:100%;
-padding:10px;
-border:none;
-border-radius:10px;
-background:#6366f1;
-color:white;
-cursor:pointer;
-}
+    /* ========= ランチャー ========= */
+    .launcher{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+    }
+    @media(min-width:520px){
+      .launcher{grid-template-columns:repeat(4,1fr);}
+    }
+    .launcher a{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:18px 8px;
+      border-radius:14px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      text-decoration:none;
+      color:var(--ink);
+      font-size:13px;
+      font-weight:500;
+      transition:.15s ease;
+      cursor:pointer;
+    }
+    .launcher a:hover{
+      background:rgba(255,255,255,.10);
+      border-color:rgba(255,255,255,.18);
+      transform:translateY(-2px);
+      box-shadow:0 8px 24px rgba(0,0,0,.3);
+    }
+    .launcher a:active{
+      transform:translateY(0);
+    }
+    .launcher .icon{
+      width:40px;height:40px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:20px;
+    }
+    .icon-chatgpt{background:linear-gradient(135deg,#10a37f,#1a7f64);}
+    .icon-claude{background:linear-gradient(135deg,#d4a574,#c4956a);}
+    .icon-github{background:linear-gradient(135deg,#333,#555);}
+    .icon-notion{background:linear-gradient(135deg,#fff,#e0e0e0);color:#111;}
 
-.apps{
-margin-top:18px;
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:8px;
-}
+    /* ========= メモ ========= */
+    .memo-area{
+      width:100%;
+      min-height:140px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      padding:14px;
+      color:var(--ink);
+      font-size:15px;
+      line-height:1.7;
+      resize:vertical;
+      outline:none;
+      font-family:inherit;
+      transition:border-color .15s;
+    }
+    .memo-area:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px var(--accent-glow);
+    }
+    .memo-area::placeholder{
+      color:rgba(255,255,255,.2);
+    }
+    .memo-bar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-top:10px;
+    }
+    .memo-bar .saved{
+      font-size:12px;
+      color:var(--accent);
+      opacity:0;
+      transition:opacity .3s;
+    }
+    .memo-bar .saved.show{opacity:1}
+    .memo-bar .char-count{
+      font-size:12px;
+      color:var(--sub);
+    }
 
-.appBtn{
-background:rgba(255,255,255,.1);
-}
-</style>
+    /* ========= フッター ========= */
+    .footer{
+      text-align:center;
+      padding:16px 0;
+      color:var(--sub);
+      font-size:12px;
+    }
+    .footer a{
+      color:var(--accent);
+      text-decoration:none;
+    }
+    .footer a:hover{text-decoration:underline}
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
 
-<div class="card">
-<h1>Desktop Hub</h1>
+    <!-- ========= 時計 ========= -->
+    <div class="clock-section">
+      <div class="clock" id="clock">00:00</div>
+      <div class="clock-date" id="clockDate"></div>
+    </div>
 
-<textarea id="memo" placeholder="メモ..."></textarea>
-<button onclick="saveMemo()">保存</button>
+    <!-- ========= ランチャー ========= -->
+    <div class="card">
+      <h2>Launcher</h2>
+      <div class="launcher">
+        <a href="https://chat.openai.com/" target="_blank" rel="noopener">
+          <span class="icon icon-chatgpt">&#x1f4ac;</span>
+          ChatGPT
+        </a>
+        <a href="https://claude.ai/" target="_blank" rel="noopener">
+          <span class="icon icon-claude">&#x2728;</span>
+          Claude
+        </a>
+        <a href="https://github.com/" target="_blank" rel="noopener">
+          <span class="icon icon-github">&#x1f5a5;</span>
+          GitHub
+        </a>
+        <a href="https://www.notion.so/" target="_blank" rel="noopener">
+          <span class="icon icon-notion">&#x1f4dd;</span>
+          Notion
+        </a>
+      </div>
+    </div>
 
-<div class="apps">
-<button class="appBtn" onclick="openApp('https://chat.openai.com')">ChatGPT</button>
-<button class="appBtn" onclick="openApp('https://claude.ai')">Claude</button>
-<button class="appBtn" onclick="openApp('https://github.com')">GitHub</button>
-<button class="appBtn" onclick="openApp('https://notion.so')">Notion</button>
-</div>
+    <!-- ========= メモ ========= -->
+    <div class="card">
+      <h2>Memo</h2>
+      <textarea class="memo-area" id="memo" placeholder="メモを入力..."></textarea>
+      <div class="memo-bar">
+        <span class="saved" id="savedMsg">保存しました</span>
+        <span class="char-count" id="charCount">0 文字</span>
+      </div>
+    </div>
 
-</div>
+    <div class="footer">
+      <a href="../">kiri-apps に戻る</a>
+    </div>
+  </div>
 
 <script>
-const memoEl = document.getElementById("memo");
+// ========= 設定 =========
+const STORAGE_KEY = "desktopHub_memo_v1";
+const DAYS = ["日","月","火","水","木","金","土"];
 
-memoEl.value = localStorage.getItem("deskMemo") || "";
+// ========= ユーティリティ =========
+const $ = (id) => document.getElementById(id);
+const pad2 = (n) => String(n).padStart(2, "0");
+
+// ========= 時計 =========
+function updateClock(){
+  const now = new Date();
+  $("clock").textContent = pad2(now.getHours()) + ":" + pad2(now.getMinutes());
+  const y = now.getFullYear();
+  const m = pad2(now.getMonth() + 1);
+  const d = pad2(now.getDate());
+  const w = DAYS[now.getDay()];
+  $("clockDate").textContent = y + "/" + m + "/" + d + "(" + w + ")";
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ========= メモ（localStorage保存） =========
+const memoEl = $("memo");
+const savedMsg = $("savedMsg");
+const charCount = $("charCount");
+let saveTimer = null;
+
+function loadMemo(){
+  try{ return localStorage.getItem(STORAGE_KEY) || ""; }
+  catch(e){ return ""; }
+}
 
 function saveMemo(){
-localStorage.setItem("deskMemo", memoEl.value);
-alert("保存した");
+  localStorage.setItem(STORAGE_KEY, memoEl.value);
+  savedMsg.classList.add("show");
+  setTimeout(() => savedMsg.classList.remove("show"), 1500);
 }
 
-function openApp(url){
-window.open(url,"_blank");
+function updateCharCount(){
+  charCount.textContent = memoEl.value.length + " 文字";
 }
+
+// ========= 起動 =========
+memoEl.value = loadMemo();
+updateCharCount();
+
+memoEl.addEventListener("input", () => {
+  updateCharCount();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveMemo, 500);
+});
+
+window.addEventListener("beforeunload", () => {
+  localStorage.setItem(STORAGE_KEY, memoEl.value);
+});
 </script>
-
 </body>
 </html>

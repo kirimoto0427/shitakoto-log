@@ -44,3 +44,8 @@ https://kirimoto0427.github.io/kiri-apps/adhd-timer/
 
 ## 🌙 AI メモ壁紙
 https://kirimoto0427.github.io/kiri-apps/ai-memo-wallpaper/
+
+---
+
+## 🖥 デスクトップ Hub
+https://kirimoto0427.github.io/kiri-apps/desktop-hub/
