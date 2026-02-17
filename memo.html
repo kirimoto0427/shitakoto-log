@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Simple Memo</title>
+
+<style>
+body{
+  background:#1e1e1e;
+  color:white;
+  font-family:sans-serif;
+  margin:0;
+  padding:20px;
+}
+
+h1{
+  font-weight:300;
+}
+
+textarea{
+  width:100%;
+  height:80vh;
+  font-size:18px;
+  padding:15px;
+  border-radius:10px;
+  border:none;
+  outline:none;
+  resize:none;
+  background:#2a2a2a;
+  color:white;
+}
+
+button{
+  margin-top:10px;
+  padding:10px 20px;
+  font-size:16px;
+  border:none;
+  border-radius:8px;
+  background:#4CAF50;
+  color:white;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#45a049;
+}
+
+.status{
+  margin-left:10px;
+  opacity:0.7;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📝 Memo</h1>
+
+<textarea id="memo"></textarea>
+
+<br>
+
+<button onclick="saveMemo()">保存</button>
+<span class="status" id="status"></span>
+
+<script>
+const memo = document.getElementById("memo");
+const status = document.getElementById("status");
+
+// 読み込み
+memo.value = localStorage.getItem("kiri_memo") || "";
+
+// 保存
+function saveMemo(){
+  localStorage.setItem("kiri_memo", memo.value);
+  status.textContent = "保存した！";
+  setTimeout(()=> status.textContent = "", 2000);
+}
+
+// 自動保存
+memo.addEventListener("input", ()=>{
+  localStorage.setItem("kiri_memo", memo.value);
+});
+</script>
+
+</body>
+</html>
