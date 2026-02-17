@@ -16,6 +16,7 @@
       --accent-glow:rgba(167,139,250,.20);
       --pink:#f0abcf;
       --pink-soft:rgba(240,171,207,.10);
+      --green:#34d399;
       --shadow:0 8px 40px rgba(0,0,0,.45);
       --radius:20px;
     }
@@ -31,7 +32,7 @@
       overflow:hidden;
     }
 
-    /* ========= 背景グロー（低負荷） ========= */
+    /* ========= 背景グロー ========= */
     body::before{
       content:"";
       position:fixed;
@@ -55,10 +56,10 @@
     .wrap{
       position:relative;
       z-index:1;
-      width:600px;
+      width:700px;
       max-width:calc(100vw - 32px);
-      height:calc(100vh - 64px);
-      max-height:800px;
+      height:calc(100vh - 48px);
+      max-height:920px;
       display:flex;
       flex-direction:column;
       gap:0;
@@ -66,8 +67,10 @@
 
     /* ========= ヘッダー ========= */
     .header{
-      text-align:center;
-      padding:0 0 18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:0 4px 14px;
       flex-shrink:0;
     }
     .header-title{
@@ -78,6 +81,46 @@
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
       background-clip:text;
+    }
+
+    /* ========= コピーボタン ========= */
+    .copy-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:7px 16px;
+      border:1px solid var(--card-border);
+      border-radius:999px;
+      background:var(--card);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      color:var(--sub);
+      font-size:12px;
+      font-weight:500;
+      letter-spacing:.5px;
+      cursor:pointer;
+      transition:all .25s;
+      user-select:none;
+      -webkit-user-select:none;
+      outline:none;
+    }
+    .copy-btn:hover{
+      color:var(--accent);
+      border-color:var(--accent-glow);
+      background:var(--accent-soft);
+    }
+    .copy-btn:active{
+      transform:scale(.96);
+    }
+    .copy-btn.copied{
+      color:var(--green);
+      border-color:rgba(52,211,153,.25);
+      background:rgba(52,211,153,.08);
+    }
+    .copy-btn svg{
+      width:14px;
+      height:14px;
+      flex-shrink:0;
     }
 
     /* ========= メモカード ========= */
@@ -202,6 +245,13 @@
     <!-- ========= ヘッダー ========= -->
     <div class="header">
       <div class="header-title">MEMO</div>
+      <button class="copy-btn" id="copyBtn" type="button">
+        <svg id="copyIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        <span id="copyLabel">コピー</span>
+      </button>
     </div>
 
     <!-- ========= メモカード ========= -->
@@ -225,18 +275,23 @@
 // ========= 設定 =========
 const STORAGE_KEY = "desktopHub_memo_v1";
 const SAVE_DELAY = 1000;
+const COPY_FEEDBACK_MS = 1800;
 
 // ========= ユーティリティ =========
 const $ = (id) => document.getElementById(id);
 
 // ========= 状態 =========
 let saveTimer = null;
+let copyTimer = null;
 
 // ========= DOM参照 =========
-const memoEl = $("memo");
+const memoEl    = $("memo");
 const saveStatus = $("saveStatus");
-const saveLabel = $("saveLabel");
-const charCount = $("charCount");
+const saveLabel  = $("saveLabel");
+const charCount  = $("charCount");
+const copyBtn    = $("copyBtn");
+const copyIcon   = $("copyIcon");
+const copyLabel  = $("copyLabel");
 
 // ========= 保存/読込 =========
 function loadMemo(){
@@ -260,6 +315,44 @@ function updateCharCount(){
   charCount.textContent = memoEl.value.length.toLocaleString() + " 文字";
 }
 
+// ========= コピー =========
+const ICON_COPY = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
+const ICON_CHECK = '<polyline points="20 6 9 17 4 12"/>';
+
+function copyMemo(){
+  const text = memoEl.value;
+  if(!text){ return; }
+
+  navigator.clipboard.writeText(text).then(() => {
+    copyBtn.classList.add("copied");
+    copyIcon.innerHTML = ICON_CHECK;
+    copyLabel.textContent = "コピー済";
+
+    clearTimeout(copyTimer);
+    copyTimer = setTimeout(() => {
+      copyBtn.classList.remove("copied");
+      copyIcon.innerHTML = ICON_COPY;
+      copyLabel.textContent = "コピー";
+    }, COPY_FEEDBACK_MS);
+  }).catch(() => {
+    /* フォールバック: execCommand */
+    memoEl.select();
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();
+
+    copyBtn.classList.add("copied");
+    copyIcon.innerHTML = ICON_CHECK;
+    copyLabel.textContent = "コピー済";
+
+    clearTimeout(copyTimer);
+    copyTimer = setTimeout(() => {
+      copyBtn.classList.remove("copied");
+      copyIcon.innerHTML = ICON_COPY;
+      copyLabel.textContent = "コピー";
+    }, COPY_FEEDBACK_MS);
+  });
+}
+
 // ========= イベント =========
 memoEl.addEventListener("input", () => {
   updateCharCount();
@@ -267,6 +360,8 @@ memoEl.addEventListener("input", () => {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveMemo, SAVE_DELAY);
 });
+
+copyBtn.addEventListener("click", copyMemo);
 
 window.addEventListener("beforeunload", () => {
   localStorage.setItem(STORAGE_KEY, memoEl.value);
