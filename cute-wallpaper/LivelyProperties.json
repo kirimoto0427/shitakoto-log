@@ -1,0 +1,20 @@
+{
+"showClock": {
+"type": "checkbox",
+"value": true,
+"text": "Show Clock"
+},
+"particlesOn": {
+"type": "checkbox",
+"value": true,
+"text": "Particles"
+},
+"particleDensity": {
+"type": "slider",
+"value": 50,
+"min": 10,
+"max": 200,
+"step": 5,
+"text": "Particle Density"
+}
+}
