@@ -1,275 +1,189 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Cute Wallpaper</title>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",system-ui,sans-serif}
-    body{cursor:default;user-select:none;-webkit-user-select:none}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Cute Wallpaper</title>
 
-    /* === background === */
-    #bg{position:fixed;inset:0;z-index:0;transition:background 1.2s ease}
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",system-ui,sans-serif}
+body{cursor:default;user-select:none;-webkit-user-select:none}
 
-    /* themes */
-    .theme-sakura  #bg{background:linear-gradient(160deg,#ffe0ec 0%,#ffd6e0 30%,#ffc8d6 60%,#ffb8cc 100%)}
-    .theme-sky     #bg{background:linear-gradient(160deg,#d0e8ff 0%,#b8deff 30%,#a0d4ff 60%,#88caff 100%)}
-    .theme-sunset  #bg{background:linear-gradient(160deg,#ffe0b2 0%,#ffccbc 30%,#f8bbd0 60%,#e1bee7 100%)}
-    .theme-forest  #bg{background:linear-gradient(160deg,#c8e6c9 0%,#b2dfdb 30%,#b3e5fc 60%,#dcedc8 100%)}
-    .theme-night   #bg{background:linear-gradient(160deg,#1a1a2e 0%,#16213e 30%,#0f3460 60%,#1a1a2e 100%)}
-    .theme-lavender #bg{background:linear-gradient(160deg,#e8daef 0%,#d7bde2 30%,#d2b4de 60%,#c39bd3 100%)}
+/* background */
+#bg{position:fixed;inset:0;z-index:0;transition:background 1.2s ease}
 
-    /* === canvas for animations === */
-    #canvas{position:fixed;inset:0;z-index:1;pointer-events:none}
+/* themes */
+.theme-sakura  #bg{background:linear-gradient(160deg,#ffe0ec 0%,#ffd6e0 30%,#ffc8d6 60%,#ffb8cc 100%)}
+.theme-sky     #bg{background:linear-gradient(160deg,#d0e8ff 0%,#b8deff 30%,#a0d4ff 60%,#88caff 100%)}
+.theme-sunset  #bg{background:linear-gradient(160deg,#ffe0b2 0%,#ffccbc 30%,#f8bbd0 60%,#e1bee7 100%)}
+.theme-forest  #bg{background:linear-gradient(160deg,#c8e6c9 0%,#b2dfdb 30%,#b3e5fc 60%,#dcedc8 100%)}
+.theme-night   #bg{background:linear-gradient(160deg,#1a1a2e 0%,#16213e 30%,#0f3460 60%,#1a1a2e 100%)}
+.theme-lavender #bg{background:linear-gradient(160deg,#e8daef 0%,#d7bde2 30%,#d2b4de 60%,#c39bd3 100%)}
 
-    /* === click sparkle === */
-    .sparkle{position:fixed;z-index:5;pointer-events:none;font-size:20px;animation:sparkle-up .9s ease-out forwards}
-    @keyframes sparkle-up{
-      0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)}
-      100%{opacity:0;transform:translateY(-60px) scale(.4) rotate(30deg)}
-    }
+/* canvas */
+#canvas{position:fixed;inset:0;z-index:1;pointer-events:none}
 
-    /* === UI panel === */
-    #panel{
-      position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:10;
-      display:flex;gap:8px;align-items:center;
-      background:rgba(255,255,255,.75);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-      border:1px solid rgba(255,255,255,.5);border-radius:999px;
-      padding:8px 16px;box-shadow:0 8px 32px rgba(0,0,0,.08);
-      transition:opacity .4s ease;
-    }
-    .theme-night #panel{background:rgba(30,30,50,.7);border-color:rgba(255,255,255,.12)}
+/* UI */
+#panel{
+position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:10;
+display:flex;gap:8px;align-items:center;
+background:rgba(255,255,255,.75);
+backdrop-filter:blur(14px);
+border-radius:999px;
+padding:8px 16px;
+}
 
-    #panel.hidden{opacity:0;pointer-events:none}
+.theme-btn{width:32px;height:32px;border-radius:50%;border:none;cursor:pointer}
+.theme-btn[data-theme="sakura"]{background:#ffc0cb}
+.theme-btn[data-theme="sky"]{background:#87cefa}
+.theme-btn[data-theme="sunset"]{background:#ffb347}
+.theme-btn[data-theme="forest"]{background:#66bb6a}
+.theme-btn[data-theme="night"]{background:#1a1a2e}
+.theme-btn[data-theme="lavender"]{background:#b39ddb}
 
-    .theme-btn{
-      width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.6);
-      cursor:pointer;transition:.2s;position:relative;
-    }
-    .theme-btn:hover{transform:scale(1.2)}
-    .theme-btn.active{border-color:#fff;box-shadow:0 0 10px rgba(255,255,255,.5)}
-    .theme-btn[data-theme="sakura"]{background:linear-gradient(135deg,#ffb8cc,#ffe0ec)}
-    .theme-btn[data-theme="sky"]{background:linear-gradient(135deg,#88caff,#d0e8ff)}
-    .theme-btn[data-theme="sunset"]{background:linear-gradient(135deg,#e1bee7,#ffe0b2)}
-    .theme-btn[data-theme="forest"]{background:linear-gradient(135deg,#b2dfdb,#c8e6c9)}
-    .theme-btn[data-theme="night"]{background:linear-gradient(135deg,#0f3460,#1a1a2e)}
-    .theme-btn[data-theme="lavender"]{background:linear-gradient(135deg,#c39bd3,#e8daef)}
-
-    .sep{width:1px;height:20px;background:rgba(0,0,0,.1);margin:0 4px}
-    .theme-night .sep{background:rgba(255,255,255,.15)}
-
-    .icon-btn{
-      width:36px;height:36px;border-radius:50%;border:none;
-      background:rgba(255,255,255,.4);cursor:pointer;font-size:16px;
-      display:flex;align-items:center;justify-content:center;transition:.2s;
-    }
-    .icon-btn:hover{background:rgba(255,255,255,.7);transform:scale(1.1)}
-    .theme-night .icon-btn{background:rgba(255,255,255,.12);color:#fff}
-    .theme-night .icon-btn:hover{background:rgba(255,255,255,.25)}
-
-    /* === time display === */
-    #clock{
-      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;
-      text-align:center;pointer-events:none;
-    }
-    #clock-time{
-      font-size:clamp(48px,12vw,120px);font-weight:200;letter-spacing:.04em;
-      color:rgba(255,255,255,.85);text-shadow:0 2px 20px rgba(0,0,0,.06);
-    }
-    #clock-date{
-      font-size:clamp(14px,3vw,22px);font-weight:400;letter-spacing:.08em;
-      color:rgba(255,255,255,.6);margin-top:4px;
-    }
-    .theme-night #clock-time{color:rgba(255,255,255,.7)}
-    .theme-night #clock-date{color:rgba(255,255,255,.4)}
-
-    /* fullscreen */
-    .fullscreen #panel{bottom:30px}
-  </style>
+/* clock */
+#clock{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+z-index:5;
+text-align:center;
+color:white;
+text-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+#clock-time{
+font-size:clamp(48px,12vw,120px);
+font-weight:200;
+}
+#clock-date{
+font-size:clamp(14px,3vw,22px);
+opacity:.7;
+margin-top:6px;
+}
+</style>
 </head>
+
 <body class="theme-sakura">
 
-  <div id="bg"></div>
-  <canvas id="canvas"></canvas>
+<div id="bg"></div>
+<canvas id="canvas"></canvas>
 
-  <div id="clock">
-    <div id="clock-time"></div>
-    <div id="clock-date"></div>
-  </div>
+<div id="clock">
+<div id="clock-time"></div>
+<div id="clock-date"></div>
+</div>
 
-  <div id="panel">
-    <button class="theme-btn active" data-theme="sakura" title="Sakura"></button>
-    <button class="theme-btn" data-theme="sky" title="Sky"></button>
-    <button class="theme-btn" data-theme="sunset" title="Sunset"></button>
-    <button class="theme-btn" data-theme="forest" title="Forest"></button>
-    <button class="theme-btn" data-theme="night" title="Night"></button>
-    <button class="theme-btn" data-theme="lavender" title="Lavender"></button>
-    <span class="sep"></span>
-    <button class="icon-btn" id="btn-fullscreen" title="Fullscreen">&#x26F6;</button>
-    <button class="icon-btn" id="btn-hide" title="Hide UI">&#x25BD;</button>
-  </div>
+<div id="panel">
+<button class="theme-btn" data-theme="sakura"></button>
+<button class="theme-btn" data-theme="sky"></button>
+<button class="theme-btn" data-theme="sunset"></button>
+<button class="theme-btn" data-theme="forest"></button>
+<button class="theme-btn" data-theme="night"></button>
+<button class="theme-btn" data-theme="lavender"></button>
+</div>
 
-  <script>
-  (() => {
-    /* ======== Theme ======== */
-    const THEMES = {
-      sakura:   { particles: ['🌸','💮','🩷','✿','❀'], bgAlpha: .12 },
-      sky:      { particles: ['☁️','🕊️','💙','✦','🫧'], bgAlpha: .10 },
-      sunset:   { particles: ['🌅','🧡','✨','🦋','🌻'], bgAlpha: .10 },
-      forest:   { particles: ['🍃','🌿','💚','🦊','🍀'], bgAlpha: .10 },
-      night:    { particles: ['⭐','🌙','💫','✨','🪐'], bgAlpha: .06 },
-      lavender: { particles: ['💜','🦄','🔮','🪻','💐'], bgAlpha: .10 },
-    };
+<script>
+(() => {
 
-    let currentTheme = localStorage.getItem('cw-theme') || 'sakura';
-    const body = document.body;
+const THEMES={
+sakura:['🌸','💮','🩷','❀'],
+sky:['☁️','🫧','💙'],
+sunset:['✨','🧡','🌅'],
+forest:['🍃','🌿','💚'],
+night:['⭐','🌙','💫'],
+lavender:['💜','🔮','🪻']
+};
 
-    function applyTheme(name) {
-      body.className = 'theme-' + name;
-      currentTheme = name;
-      localStorage.setItem('cw-theme', name);
-      document.querySelectorAll('.theme-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.theme === name);
-      });
-      resetParticles();
-    }
+let currentTheme=localStorage.getItem('cw-theme')||'sakura';
+const body=document.body;
 
-    document.querySelectorAll('.theme-btn').forEach(b => {
-      b.addEventListener('click', () => applyTheme(b.dataset.theme));
-    });
+/* theme */
+function applyTheme(name){
+body.className='theme-'+name;
+currentTheme=name;
+localStorage.setItem('cw-theme',name);
+resetParticles();
+}
 
-    applyTheme(currentTheme);
+document.querySelectorAll('.theme-btn').forEach(b=>{
+b.onclick=()=>applyTheme(b.dataset.theme);
+});
 
-    /* ======== Clock ======== */
-    const DAYS = ['日','月','火','水','木','金','土'];
-    function updateClock() {
-      const now = new Date();
-      const h = String(now.getHours()).padStart(2,'0');
-      const m = String(now.getMinutes()).padStart(2,'0');
-      document.getElementById('clock-time').textContent = h + ':' + m;
-      const mo = now.getMonth()+1;
-      const d = now.getDate();
-      const day = DAYS[now.getDay()];
-      document.getElementById('clock-date').textContent = mo + '/' + d + ' (' + day + ')';
-    }
-    updateClock();
-    setInterval(updateClock, 10000);
+/* clock */
+const DAYS=['日','月','火','水','木','金','土'];
 
-    /* ======== Canvas particles ======== */
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    let W, H;
-    let particles = [];
-    const PARTICLE_COUNT = 35;
+function updateClock(){
+const now=new Date();
+const h=String(now.getHours()).padStart(2,'0');
+const m=String(now.getMinutes()).padStart(2,'0');
 
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
+document.getElementById('clock-time').textContent=h+':'+m;
 
-    class Particle {
-      constructor() { this.reset(true); }
-      reset(init) {
-        const theme = THEMES[currentTheme];
-        this.emoji = theme.particles[Math.floor(Math.random() * theme.particles.length)];
-        this.size = 14 + Math.random() * 22;
-        this.x = Math.random() * W;
-        this.y = init ? Math.random() * H : -40;
-        this.vx = (Math.random() - .5) * .4;
-        this.vy = .3 + Math.random() * .6;
-        this.rot = Math.random() * Math.PI * 2;
-        this.rotV = (Math.random() - .5) * .02;
-        this.alpha = .3 + Math.random() * .5;
-        this.wobblePhase = Math.random() * Math.PI * 2;
-        this.wobbleSpeed = .005 + Math.random() * .01;
-        this.wobbleAmp = 20 + Math.random() * 30;
-      }
-      update() {
-        this.wobblePhase += this.wobbleSpeed;
-        this.x += this.vx + Math.sin(this.wobblePhase) * .3;
-        this.y += this.vy;
-        this.rot += this.rotV;
-        if (this.y > H + 40 || this.x < -40 || this.x > W + 40) this.reset(false);
-      }
-      draw() {
-        ctx.save();
-        ctx.globalAlpha = this.alpha;
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.rot);
-        ctx.font = this.size + 'px serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(this.emoji, 0, 0);
-        ctx.restore();
-      }
-    }
+const mo=now.getMonth()+1;
+const d=now.getDate();
+const day=DAYS[now.getDay()];
 
-    function resetParticles() {
-      particles = [];
-      for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
-    }
+document.getElementById('clock-date').textContent=`${mo}/${d} (${day})`;
+}
 
-    function animate() {
-      ctx.clearRect(0, 0, W, H);
-      for (const p of particles) { p.update(); p.draw(); }
-      requestAnimationFrame(animate);
-    }
-    resetParticles();
-    animate();
+updateClock();
+setInterval(updateClock,1000);
 
-    /* ======== Click sparkle ======== */
-    const CLICK_EMOJIS = ['💖','✨','🌟','💫','⭐','🩷','💜','💙','💚','🧡'];
-    document.addEventListener('click', e => {
-      if (e.target.closest('#panel')) return;
-      for (let i = 0; i < 4; i++) {
-        const el = document.createElement('div');
-        el.className = 'sparkle';
-        el.textContent = CLICK_EMOJIS[Math.floor(Math.random() * CLICK_EMOJIS.length)];
-        el.style.left = (e.clientX + (Math.random()-0.5)*40) + 'px';
-        el.style.top  = (e.clientY + (Math.random()-0.5)*20) + 'px';
-        el.style.fontSize = (16 + Math.random()*14) + 'px';
-        document.body.appendChild(el);
-        el.addEventListener('animationend', () => el.remove());
-      }
-    });
+/* particles */
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d');
 
-    /* ======== Fullscreen ======== */
-    document.getElementById('btn-fullscreen').addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(()=>{});
-        body.classList.add('fullscreen');
-      } else {
-        document.exitFullscreen();
-        body.classList.remove('fullscreen');
-      }
-    });
-    document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement) body.classList.remove('fullscreen');
-    });
+let W,H;
+let particles=[];
+const COUNT=35;
 
-    /* ======== Hide UI ======== */
-    const panel = document.getElementById('panel');
-    let hideTimeout;
-    document.getElementById('btn-hide').addEventListener('click', () => {
-      panel.classList.add('hidden');
-    });
-    document.addEventListener('mousemove', () => {
-      panel.classList.remove('hidden');
-      clearTimeout(hideTimeout);
-      hideTimeout = setTimeout(() => panel.classList.add('hidden'), 6000);
-    });
-    document.addEventListener('touchstart', () => {
-      if (panel.classList.contains('hidden')) {
-        panel.classList.remove('hidden');
-        clearTimeout(hideTimeout);
-        hideTimeout = setTimeout(() => panel.classList.add('hidden'), 6000);
-      }
-    });
+function resize(){
+W=canvas.width=innerWidth;
+H=canvas.height=innerHeight;
+}
+window.addEventListener('resize',resize);
+resize();
 
-  })();
-  </script>
+class Particle{
+constructor(){this.reset(true);}
+reset(init){
+const list=THEMES[currentTheme];
+this.emoji=list[Math.floor(Math.random()*list.length)];
+this.x=Math.random()*W;
+this.y=init?Math.random()*H:-40;
+this.vy=.3+Math.random()*.7;
+this.size=16+Math.random()*24;
+}
+update(){
+this.y+=this.vy;
+if(this.y>H+40)this.reset(false);
+}
+draw(){
+ctx.font=this.size+'px serif';
+ctx.fillText(this.emoji,this.x,this.y);
+}
+}
+
+function resetParticles(){
+particles=[];
+for(let i=0;i<COUNT;i++)particles.push(new Particle());
+}
+
+function animate(){
+ctx.clearRect(0,0,W,H);
+particles.forEach(p=>{p.update();p.draw();});
+requestAnimationFrame(animate);
+}
+
+/* start */
+applyTheme(currentTheme);
+resetParticles();
+animate();
+
+})();
+</script>
+
 </body>
 </html>
