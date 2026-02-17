@@ -3,35 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>デスクトップ Hub</title>
+  <title>Memo — desktop-hub</title>
   <style>
     :root{
       --bg:#0e1117;
-      --card:rgba(255,255,255,.06);
-      --card-border:rgba(255,255,255,.10);
+      --card:rgba(255,255,255,.05);
+      --card-border:rgba(255,255,255,.09);
       --ink:#e6edf3;
-      --sub:#8b949e;
-      --accent:#58a6ff;
-      --accent-glow:rgba(88,166,255,.15);
-      --shadow:0 8px 32px rgba(0,0,0,.4);
-      --radius:16px;
+      --sub:#6e7a88;
+      --accent:#a78bfa;
+      --accent-soft:rgba(167,139,250,.12);
+      --accent-glow:rgba(167,139,250,.20);
+      --pink:#f0abcf;
+      --pink-soft:rgba(240,171,207,.10);
+      --shadow:0 8px 40px rgba(0,0,0,.45);
+      --radius:20px;
     }
     *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
     body{
       font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
       background:var(--bg);
       color:var(--ink);
-      min-height:100vh;
-      overflow-x:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
     }
 
-    /* ========= 背景グロー ========= */
+    /* ========= 背景グロー（低負荷） ========= */
     body::before{
       content:"";
       position:fixed;
-      top:-30%;left:-10%;
-      width:60%;height:60%;
-      background:radial-gradient(circle,rgba(88,166,255,.08) 0%,transparent 70%);
+      top:-25%;left:-15%;
+      width:55%;height:55%;
+      background:radial-gradient(circle,rgba(167,139,250,.07) 0%,transparent 70%);
       pointer-events:none;
       z-index:0;
     }
@@ -40,202 +46,172 @@
       position:fixed;
       bottom:-20%;right:-10%;
       width:50%;height:50%;
-      background:radial-gradient(circle,rgba(139,92,246,.06) 0%,transparent 70%);
+      background:radial-gradient(circle,rgba(240,171,207,.05) 0%,transparent 70%);
       pointer-events:none;
       z-index:0;
     }
 
+    /* ========= レイアウト ========= */
     .wrap{
       position:relative;
       z-index:1;
-      max-width:720px;
-      margin:0 auto;
-      padding:24px 16px 60px;
+      width:600px;
+      max-width:calc(100vw - 32px);
+      height:calc(100vh - 64px);
+      max-height:800px;
+      display:flex;
+      flex-direction:column;
+      gap:0;
     }
 
-    /* ========= 時計 ========= */
-    .clock-section{
+    /* ========= ヘッダー ========= */
+    .header{
       text-align:center;
-      padding:32px 0 20px;
+      padding:0 0 18px;
+      flex-shrink:0;
     }
-    .clock{
-      font-size:64px;
-      font-weight:200;
-      letter-spacing:4px;
-      line-height:1;
-      background:linear-gradient(135deg,#e6edf3,#58a6ff);
+    .header-title{
+      font-size:15px;
+      font-weight:500;
+      letter-spacing:2px;
+      background:linear-gradient(135deg,var(--accent),var(--pink));
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
       background-clip:text;
     }
-    .clock-date{
-      margin-top:8px;
-      font-size:15px;
-      color:var(--sub);
-      letter-spacing:1px;
-    }
 
-    /* ========= カード共通 ========= */
+    /* ========= メモカード ========= */
     .card{
       background:var(--card);
       border:1px solid var(--card-border);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
-      padding:20px;
-      margin-bottom:16px;
-    }
-    .card h2{
-      font-size:14px;
-      font-weight:600;
-      color:var(--sub);
-      text-transform:uppercase;
-      letter-spacing:1.5px;
-      margin-bottom:14px;
-    }
-
-    /* ========= ランチャー ========= */
-    .launcher{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:10px;
-    }
-    @media(min-width:520px){
-      .launcher{grid-template-columns:repeat(4,1fr);}
-    }
-    .launcher a{
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
       display:flex;
       flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:18px 8px;
-      border-radius:14px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-      text-decoration:none;
-      color:var(--ink);
-      font-size:13px;
-      font-weight:500;
-      transition:.15s ease;
-      cursor:pointer;
+      flex:1;
+      min-height:0;
+      overflow:hidden;
     }
-    .launcher a:hover{
-      background:rgba(255,255,255,.10);
-      border-color:rgba(255,255,255,.18);
-      transform:translateY(-2px);
-      box-shadow:0 8px 24px rgba(0,0,0,.3);
-    }
-    .launcher a:active{
-      transform:translateY(0);
-    }
-    .launcher .icon{
-      width:40px;height:40px;
-      border-radius:12px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:20px;
-    }
-    .icon-chatgpt{background:linear-gradient(135deg,#10a37f,#1a7f64);}
-    .icon-claude{background:linear-gradient(135deg,#d4a574,#c4956a);}
-    .icon-github{background:linear-gradient(135deg,#333,#555);}
-    .icon-notion{background:linear-gradient(135deg,#fff,#e0e0e0);color:#111;}
 
-    /* ========= メモ ========= */
+    /* ========= テキストエリア ========= */
     .memo-area{
+      flex:1;
       width:100%;
-      min-height:140px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:12px;
-      padding:14px;
+      background:transparent;
+      border:none;
+      padding:24px;
       color:var(--ink);
       font-size:15px;
-      line-height:1.7;
-      resize:vertical;
+      line-height:1.85;
+      resize:none;
       outline:none;
       font-family:inherit;
-      transition:border-color .15s;
-    }
-    .memo-area:focus{
-      border-color:var(--accent);
-      box-shadow:0 0 0 3px var(--accent-glow);
+      overflow-y:auto;
     }
     .memo-area::placeholder{
-      color:rgba(255,255,255,.2);
+      color:rgba(255,255,255,.15);
     }
-    .memo-bar{
+    .memo-area::-webkit-scrollbar{
+      width:6px;
+    }
+    .memo-area::-webkit-scrollbar-track{
+      background:transparent;
+    }
+    .memo-area::-webkit-scrollbar-thumb{
+      background:rgba(255,255,255,.08);
+      border-radius:3px;
+    }
+    .memo-area::-webkit-scrollbar-thumb:hover{
+      background:rgba(255,255,255,.14);
+    }
+
+    /* ========= ステータスバー ========= */
+    .status-bar{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin-top:10px;
+      padding:12px 24px;
+      border-top:1px solid rgba(255,255,255,.06);
+      flex-shrink:0;
     }
-    .memo-bar .saved{
+    .save-status{
       font-size:12px;
-      color:var(--accent);
-      opacity:0;
-      transition:opacity .3s;
+      font-weight:500;
+      letter-spacing:.5px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      min-width:80px;
+      color:var(--sub);
+      transition:color .3s;
     }
-    .memo-bar .saved.show{opacity:1}
-    .memo-bar .char-count{
+    .save-status.saving{
+      color:var(--pink);
+    }
+    .save-status.saved{
+      color:var(--accent);
+    }
+    .save-dot{
+      width:6px;height:6px;
+      border-radius:50%;
+      background:var(--sub);
+      transition:background .3s;
+      flex-shrink:0;
+    }
+    .save-status.saving .save-dot{
+      background:var(--pink);
+      animation:pulse .8s ease-in-out infinite;
+    }
+    .save-status.saved .save-dot{
+      background:var(--accent);
+    }
+    @keyframes pulse{
+      0%,100%{opacity:1}
+      50%{opacity:.3}
+    }
+    .char-count{
       font-size:12px;
       color:var(--sub);
+      letter-spacing:.3px;
+      font-variant-numeric:tabular-nums;
     }
 
     /* ========= フッター ========= */
     .footer{
       text-align:center;
-      padding:16px 0;
-      color:var(--sub);
-      font-size:12px;
+      padding:14px 0 0;
+      flex-shrink:0;
     }
     .footer a{
-      color:var(--accent);
+      color:var(--sub);
       text-decoration:none;
+      font-size:11px;
+      letter-spacing:.5px;
+      transition:color .2s;
     }
-    .footer a:hover{text-decoration:underline}
+    .footer a:hover{
+      color:var(--accent);
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
 
-    <!-- ========= 時計 ========= -->
-    <div class="clock-section">
-      <div class="clock" id="clock">00:00</div>
-      <div class="clock-date" id="clockDate"></div>
+    <!-- ========= ヘッダー ========= -->
+    <div class="header">
+      <div class="header-title">MEMO</div>
     </div>
 
-    <!-- ========= ランチャー ========= -->
+    <!-- ========= メモカード ========= -->
     <div class="card">
-      <h2>Launcher</h2>
-      <div class="launcher">
-        <a href="https://chat.openai.com/" target="_blank" rel="noopener">
-          <span class="icon icon-chatgpt">&#x1f4ac;</span>
-          ChatGPT
-        </a>
-        <a href="https://claude.ai/" target="_blank" rel="noopener">
-          <span class="icon icon-claude">&#x2728;</span>
-          Claude
-        </a>
-        <a href="https://github.com/" target="_blank" rel="noopener">
-          <span class="icon icon-github">&#x1f5a5;</span>
-          GitHub
-        </a>
-        <a href="https://www.notion.so/" target="_blank" rel="noopener">
-          <span class="icon icon-notion">&#x1f4dd;</span>
-          Notion
-        </a>
-      </div>
-    </div>
-
-    <!-- ========= メモ ========= -->
-    <div class="card">
-      <h2>Memo</h2>
-      <textarea class="memo-area" id="memo" placeholder="メモを入力..."></textarea>
-      <div class="memo-bar">
-        <span class="saved" id="savedMsg">保存しました</span>
+      <textarea class="memo-area" id="memo" placeholder="ここにメモを書く..."></textarea>
+      <div class="status-bar">
+        <div class="save-status" id="saveStatus">
+          <span class="save-dot"></span>
+          <span id="saveLabel">保存済</span>
+        </div>
         <span class="char-count" id="charCount">0 文字</span>
       </div>
     </div>
@@ -248,31 +224,21 @@
 <script>
 // ========= 設定 =========
 const STORAGE_KEY = "desktopHub_memo_v1";
-const DAYS = ["日","月","火","水","木","金","土"];
+const SAVE_DELAY = 1000;
 
 // ========= ユーティリティ =========
 const $ = (id) => document.getElementById(id);
-const pad2 = (n) => String(n).padStart(2, "0");
 
-// ========= 時計 =========
-function updateClock(){
-  const now = new Date();
-  $("clock").textContent = pad2(now.getHours()) + ":" + pad2(now.getMinutes());
-  const y = now.getFullYear();
-  const m = pad2(now.getMonth() + 1);
-  const d = pad2(now.getDate());
-  const w = DAYS[now.getDay()];
-  $("clockDate").textContent = y + "/" + m + "/" + d + "(" + w + ")";
-}
-updateClock();
-setInterval(updateClock, 1000);
-
-// ========= メモ（localStorage保存） =========
-const memoEl = $("memo");
-const savedMsg = $("savedMsg");
-const charCount = $("charCount");
+// ========= 状態 =========
 let saveTimer = null;
 
+// ========= DOM参照 =========
+const memoEl = $("memo");
+const saveStatus = $("saveStatus");
+const saveLabel = $("saveLabel");
+const charCount = $("charCount");
+
+// ========= 保存/読込 =========
 function loadMemo(){
   try{ return localStorage.getItem(STORAGE_KEY) || ""; }
   catch(e){ return ""; }
@@ -280,27 +246,35 @@ function loadMemo(){
 
 function saveMemo(){
   localStorage.setItem(STORAGE_KEY, memoEl.value);
-  savedMsg.classList.add("show");
-  setTimeout(() => savedMsg.classList.remove("show"), 1500);
+  saveStatus.className = "save-status saved";
+  saveLabel.textContent = "保存済";
 }
 
+function showSaving(){
+  saveStatus.className = "save-status saving";
+  saveLabel.textContent = "保存中...";
+}
+
+// ========= 文字数カウント =========
 function updateCharCount(){
-  charCount.textContent = memoEl.value.length + " 文字";
+  charCount.textContent = memoEl.value.length.toLocaleString() + " 文字";
 }
 
-// ========= 起動 =========
-memoEl.value = loadMemo();
-updateCharCount();
-
+// ========= イベント =========
 memoEl.addEventListener("input", () => {
   updateCharCount();
+  showSaving();
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveMemo, 500);
+  saveTimer = setTimeout(saveMemo, SAVE_DELAY);
 });
 
 window.addEventListener("beforeunload", () => {
   localStorage.setItem(STORAGE_KEY, memoEl.value);
 });
+
+// ========= 起動 =========
+memoEl.value = loadMemo();
+updateCharCount();
 </script>
 </body>
 </html>
