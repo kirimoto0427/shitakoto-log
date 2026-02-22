@@ -1,311 +1,177 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>imawahoryu</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>kiri-apps</title>
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f6f8ff;
+      --card: #ffffffcc;
+      --ink: #1b1f2a;
+      --sub: #556070;
+      --accent: #4b7cff;
+      --accent2: #e9f0ff;
+      --danger: #e05555;
+      --line: #e6ecf6;
+      --shadow: 0 10px 30px rgba(20,30,60,.12);
+      --radius: 16px;
     }
 
     body {
-      font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Georgia', serif;
-      background: #f7f6f3;
-      color: #2c2c2c;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 48px 24px 64px;
+      padding: 40px 20px 64px;
     }
 
     header {
-      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: 0.25em;
-      color: #b0aca4;
-      margin-bottom: 56px;
-      text-transform: lowercase;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 440px;
-    }
-
-    textarea {
-      width: 100%;
-      border: none;
-      border-bottom: 1px solid #d0cdc8;
-      background: transparent;
-      font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Georgia', serif;
-      font-size: 18px;
-      color: #2c2c2c;
-      line-height: 1.8;
-      resize: none;
-      outline: none;
-      padding: 4px 0 12px;
-      min-height: 56px;
-      transition: border-color 0.25s;
-      -webkit-appearance: none;
-    }
-
-    textarea::placeholder {
-      color: #c8c4be;
-    }
-
-    textarea:focus {
-      border-color: #999590;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 28px;
-    }
-
-    button {
-      flex: 1;
-      padding: 15px 0;
-      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-      font-size: 13px;
-      font-weight: 400;
-      letter-spacing: 0.1em;
-      border: 1px solid #d0cdc8;
-      border-radius: 3px;
-      background: transparent;
-      color: #666360;
-      cursor: pointer;
-      transition: all 0.15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button:hover {
-      border-color: #aaa9a6;
-      color: #444;
-    }
-
-    button:active {
-      background: #2c2c2c;
-      color: #f7f6f3;
-      border-color: #2c2c2c;
-    }
-
-    .result {
-      width: 100%;
-      max-width: 440px;
-      margin-top: 52px;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-
-    .result.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .pending-message {
-      font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Georgia', serif;
-      font-size: 17px;
-      color: #999590;
-      line-height: 2;
       text-align: center;
-      padding: 8px 0;
+      margin-bottom: 40px;
     }
 
-    .breakdown {
-      display: flex;
-      flex-direction: column;
-      gap: 28px;
+    header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--ink);
     }
 
-    .layer {
-      padding-left: 18px;
-      border-left: 1.5px solid #e0ddd8;
-    }
-
-    .layer-label {
-      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-      font-size: 10px;
-      letter-spacing: 0.18em;
-      color: #c0bdb8;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .layer-content {
-      font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Georgia', serif;
-      font-size: 15px;
-      color: #444;
-      line-height: 1.85;
-    }
-
-    .layer-content.empty {
-      color: #ccc;
+    header p {
+      margin-top: 6px;
       font-size: 13px;
+      color: var(--sub);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    a.app-card {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      text-decoration: none;
+      color: inherit;
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+
+    a.app-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px rgba(20,30,60,.16);
+    }
+
+    .app-icon {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .app-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .app-desc {
+      font-size: 12px;
+      color: var(--sub);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 520px) {
+      header h1 { font-size: 18px; }
+      .grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <header>imawahoryu</header>
+  <header>
+    <h1>kiri-apps</h1>
+    <p>個人用アプリ一覧</p>
+  </header>
 
-  <div class="card">
-    <textarea id="input" placeholder="いま、頭の中にあること。" rows="2" maxlength="200"></textarea>
-    <div class="buttons">
-      <button id="btn-break">分解する</button>
-      <button id="btn-hold">保留する</button>
-    </div>
+  <div class="grid">
+
+    <a class="app-card" href="./shitakoto-log/">
+      <div class="app-icon">✅</div>
+      <div class="app-name">したことログ</div>
+      <div class="app-desc">やったことを記録するログ</div>
+    </a>
+
+    <a class="app-card" href="./todo-1/">
+      <div class="app-icon">📋</div>
+      <div class="app-name">今日のすること</div>
+      <div class="app-desc">今日のタスクリスト</div>
+    </a>
+
+    <a class="app-card" href="./tanoshisa/">
+      <div class="app-icon">🟡</div>
+      <div class="app-name">楽しさ塊回収メモ</div>
+      <div class="app-desc">楽しかったことを記録する</div>
+    </a>
+
+    <a class="app-card" href="./tanoshisa-2/">
+      <div class="app-icon">🟡</div>
+      <div class="app-name">楽しさ塊回収メモ（シンプル）</div>
+      <div class="app-desc">シンプル版の楽しさログ</div>
+    </a>
+
+    <a class="app-card" href="./adhd-quick-reset/">
+      <div class="app-icon">⏱</div>
+      <div class="app-name">ADHDクイックリセット</div>
+      <div class="app-desc">3分タイマー＋次のアクション</div>
+    </a>
+
+    <a class="app-card" href="./adhd-app-1/">
+      <div class="app-icon">🧩</div>
+      <div class="app-name">ラベリングログ</div>
+      <div class="app-desc">今の状態にラベルをつける</div>
+    </a>
+
+    <a class="app-card" href="./adhd-app-2/">
+      <div class="app-icon">🛑</div>
+      <div class="app-name">停止・回復ログ</div>
+      <div class="app-desc">止まったことと回復を記録する</div>
+    </a>
+
+    <a class="app-card" href="./imawahoryu/">
+      <div class="app-icon">🌀</div>
+      <div class="app-name">imawahoryu</div>
+      <div class="app-desc">頭の中を分解・保留する</div>
+    </a>
+
+    <a class="app-card" href="./ai-memo-wallpaper/">
+      <div class="app-icon">🌙</div>
+      <div class="app-name">AI メモ壁紙</div>
+      <div class="app-desc">メモを壁紙にする</div>
+    </a>
+
+    <a class="app-card" href="./desktop-hub/">
+      <div class="app-icon">🖥</div>
+      <div class="app-name">デスクトップ Hub</div>
+      <div class="app-desc">デスクトップのハブ</div>
+    </a>
+
+    <a class="app-card" href="./memo/">
+      <div class="app-icon">📝</div>
+      <div class="app-name">メモ</div>
+      <div class="app-desc">シンプルなメモ帳</div>
+    </a>
+
   </div>
-
-  <div class="result" id="result"></div>
-
-  <script>
-    const inputEl  = document.getElementById('input');
-    const resultEl = document.getElementById('result');
-    const btnBreak = document.getElementById('btn-break');
-    const btnHold  = document.getElementById('btn-hold');
-
-    /* ── 辞書 ── */
-    const EMOTIONS = [
-      '怖い','恐い','怖かった','恐かった',
-      '不安','焦り','焦る','焦った',
-      '悲しい','悲しかった','つらい','辛い','苦しい','苦しかった',
-      'さみしい','寂しい','孂しい',
-      '嬉しい','嬉しかった','うれしい','よかった','ほっとした',
-      'ムカつく','むかつく','腹立つ','怒り','怒った','イライラ','いらいら',
-      '恥ずかしい','恥ずかしかった','はずかしい',
-      '罪悪感','後悔','くやしい','悔しい',
-      'びっくり','驚いた','おどろいた',
-      '疲れた','つかれた','しんどい','だるい',
-      '嫌だ','嫌だった','いやだ','きつい',
-      'ほしい','欲しい','望む','望んでいる',
-    ];
-
-    const PAST_PATTERNS = [
-      /[\u3057]\u305f$/, /[\u3057]\u305f[。．]?$/, /だった/, /でした/,
-      /ました/, /ません?でした/, /あった/, /なかった/,
-      /言われた/, /された/, /できた/, /できなかった/,
-      /行った/, /来た/, /見た/, /聞いた/,
-    ];
-
-    const GUESS_WORDS = [
-      'かもしれない','かも','かもしれ','はずだ','はずがない',
-      '多分','たぶん','おそらく','きっと','おそらく',
-      'だろう','でしょう','かな','かなあ','ような気がする',
-      'ような気がし','と思う','と思った','と思ってた','と感じる',
-      'のかもしれない','ではないか','じゃないか',
-    ];
-
-    const SELF_STORY = [
-      'だから私は','つまり私は','やはり私は','やっぱり私は',
-      'だから自分は','つまり自分は','私はそういう人間','自分はそういう人間',
-      '私はダメ','自分はダメ','私には無理','自分には無理',
-      '私はいつも','自分はいつも','私はきっと','私はもう',
-      '結局私は','結局自分は','私はずっと','自分はずっと',
-      'どうせ私','どうせ自分',
-    ];
-
-    /* ── 分解ロジック ── */
-    function analyze(text) {
-      const result = {
-        感情: null,
-        事実: null,
-        解釈: null,
-        意味付け: null,
-      };
-
-      // 感情
-      const foundEmotion = EMOTIONS.find(w => text.includes(w));
-      if (foundEmotion) {
-        result.感情 = `「${foundEmotion}」という気持ちが含まれている。`;
-      }
-
-      // 事実
-      const foundPast = PAST_PATTERNS.find(p => p.test(text));
-      if (foundPast) {
-        result.事実 = '過去に起きた、または起きていることとして語られている。';
-      }
-
-      // 解釈
-      const foundGuess = GUESS_WORDS.find(w => text.includes(w));
-      if (foundGuess) {
-        result.解釈 = `「${foundGuess}」という推測や解釈が混じっている。`;
-      }
-
-      // 意味付け
-      const foundSelf = SELF_STORY.find(w => text.includes(w));
-      if (foundSelf) {
-        result.意味付け = `「${foundSelf}」という自己物語が含まれている。`;
-      }
-
-      // どれも引っかからなかった場合のフォールバック
-      if (!result.感情 && !result.事実 && !result.解釈 && !result.意味付け) {
-        result.事実 = 'ことばとして表に出た。それだけで十分。';
-      }
-
-      return result;
-    }
-
-    /* ── 表示 ── */
-    function show(html) {
-      resultEl.classList.remove('visible');
-      resultEl.innerHTML = html;
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          resultEl.classList.add('visible');
-        });
-      });
-    }
-
-    function hide() {
-      resultEl.classList.remove('visible');
-      resultEl.innerHTML = '';
-    }
-
-    /* ── ボタン処理 ── */
-    btnHold.addEventListener('click', () => {
-      hide();
-      setTimeout(() => {
-        show(`<p class="pending-message">これは今、解決しなくていい。</p>`);
-      }, 40);
-    });
-
-    btnBreak.addEventListener('click', () => {
-      const text = inputEl.value.trim();
-      if (!text) return;
-
-      hide();
-
-      setTimeout(() => {
-        const layers = analyze(text);
-        const keys = ['感情', '事実', '解釈', '意味付け'];
-        const html = `<div class="breakdown">${
-          keys.map(k => {
-            const val = layers[k];
-            return `<div class="layer">
-              <div class="layer-label">${k}</div>
-              <div class="layer-content${val ? '' : ' empty'}">${
-                val ? escHtml(val) : '—'
-              }</div>
-            </div>`;
-          }).join('')
-        }</div>`;
-
-        show(html);
-      }, 800);
-    });
-
-    function escHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-  </script>
 
 </body>
 </html>
