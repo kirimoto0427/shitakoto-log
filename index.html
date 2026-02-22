@@ -1,250 +1,311 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>kiri-apps（アプリ一覧）</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>imawahoryu</title>
   <style>
-    :root{
-      --bg:#f6f8ff;
-      --card:#ffffffcc;
-      --ink:#1b1f2a;
-      --sub:#556070;
-      --accent:#4b7cff;
-      --accent2:#e9f0ff;
-      --line:#e6ecf6;
-      --shadow:0 10px 30px rgba(20,30,60,.12);
-      --radius:16px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP","Yu Gothic",system-ui,sans-serif;
-      background:linear-gradient(180deg,#f7f9ff 0%, #f2f6ff 40%, #f6f8ff 100%);
-      color:var(--ink);
-    }
-    header{
-      max-width:900px;
-      margin:0 auto;
-      padding:22px 18px 10px;
-    }
-    .brand{
-      display:flex; align-items:center; gap:10px;
-    }
-    .dot{
-      width:12px; height:12px; border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 8px 18px rgba(75,124,255,.35);
-    }
-    h1{
-      font-size:20px; margin:0;
-      letter-spacing:.02em;
-    }
-    .desc{
-      margin:8px 0 0;
-      color:var(--sub);
-      font-size:13px;
-      line-height:1.5;
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    main{
-      max-width:900px;
-      margin:0 auto;
-      padding:12px 18px 40px;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
-      gap:14px;
-    }
-
-    a.app{
-      display:block;
-      text-decoration:none;
-      color:inherit;
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:14px 14px 12px;
-      transition:.12s transform ease, .12s box-shadow ease, .12s border-color ease;
-      backdrop-filter: blur(8px);
-    }
-    a.app:hover{
-      transform:translateY(-2px);
-      border-color:#d5e1ff;
-      box-shadow:0 16px 40px rgba(20,30,60,.14);
-    }
-    .title{
-      margin:0 0 6px;
-      font-weight:700;
-      font-size:16px;
-      letter-spacing:.02em;
-    }
-    .small{
-      margin:0 0 10px;
-      color:var(--sub);
-      font-size:13px;
-      line-height:1.5;
-    }
-    .mini{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      margin-top:10px;
-    }
-    .tag{
-      font-size:12px;
-      color:#2a3a5a;
-      background:var(--accent2);
-      border:1px solid #dbe6ff;
-      padding:4px 8px;
-      border-radius:999px;
+    body {
+      font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Georgia', serif;
+      background: #f7f6f3;
+      color: #2c2c2c;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px 64px;
     }
 
-    .note{
-      margin-top:16px;
-      color:var(--sub);
-      font-size:12px;
-      line-height:1.6;
-      padding:12px 14px;
-      background:#ffffffaa;
-      border:1px solid var(--line);
-      border-radius:14px;
+    header {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.25em;
+      color: #b0aca4;
+      margin-bottom: 56px;
+      text-transform: lowercase;
     }
-    .note b{color:var(--ink)}
-    footer{
-      max-width:900px;
-      margin:0 auto;
-      padding:10px 18px 24px;
-      color:var(--sub);
-      font-size:12px;
+
+    .card {
+      width: 100%;
+      max-width: 440px;
     }
-    code.inline{
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:10px;
-      padding:2px 8px;
+
+    textarea {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid #d0cdc8;
+      background: transparent;
+      font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Georgia', serif;
+      font-size: 18px;
+      color: #2c2c2c;
+      line-height: 1.8;
+      resize: none;
+      outline: none;
+      padding: 4px 0 12px;
+      min-height: 56px;
+      transition: border-color 0.25s;
+      -webkit-appearance: none;
+    }
+
+    textarea::placeholder {
+      color: #c8c4be;
+    }
+
+    textarea:focus {
+      border-color: #999590;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    button {
+      flex: 1;
+      padding: 15px 0;
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      border: 1px solid #d0cdc8;
+      border-radius: 3px;
+      background: transparent;
+      color: #666360;
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:hover {
+      border-color: #aaa9a6;
+      color: #444;
+    }
+
+    button:active {
+      background: #2c2c2c;
+      color: #f7f6f3;
+      border-color: #2c2c2c;
+    }
+
+    .result {
+      width: 100%;
+      max-width: 440px;
+      margin-top: 52px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .result.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .pending-message {
+      font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Georgia', serif;
+      font-size: 17px;
+      color: #999590;
+      line-height: 2;
+      text-align: center;
+      padding: 8px 0;
+    }
+
+    .breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .layer {
+      padding-left: 18px;
+      border-left: 1.5px solid #e0ddd8;
+    }
+
+    .layer-label {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: #c0bdb8;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .layer-content {
+      font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Georgia', serif;
+      font-size: 15px;
+      color: #444;
+      line-height: 1.85;
+    }
+
+    .layer-content.empty {
+      color: #ccc;
+      font-size: 13px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <span class="dot"></span>
-      <h1>kiri-apps（アプリ一覧）</h1>
+
+  <header>imawahoryu</header>
+
+  <div class="card">
+    <textarea id="input" placeholder="いま、頭の中にあること。" rows="2" maxlength="200"></textarea>
+    <div class="buttons">
+      <button id="btn-break">分解する</button>
+      <button id="btn-hold">保留する</button>
     </div>
-    <p class="desc">
-      個人用に作った小さな webアプリ集。<br>
-      ADHDの工夫・生活の補助・ログ系をまとめて置く場所。
-    </p>
-  </header>
+  </div>
 
-  <main>
-    <div class="grid">
+  <div class="result" id="result"></div>
 
-      <!-- したことログ -->
-      <a class="app" href="./shitakoto-log/">
-        <p class="title">🟡 したことログ</p>
-        <p class="small">押すだけで「やった」を記録。カテゴリ追加もできる。</p>
-        <div class="mini">
-          <span class="tag">ログ</span><span class="tag">記録</span><span class="tag">生活</span>
-        </div>
-      </a>
+  <script>
+    const inputEl  = document.getElementById('input');
+    const resultEl = document.getElementById('result');
+    const btnBreak = document.getElementById('btn-break');
+    const btnHold  = document.getElementById('btn-hold');
 
-      <!-- ADHD クイックリセット -->
-      <a class="app" href="./adhd-quick-reset/">
-        <p class="title">🧠 ADHD クイックリセット</p>
-        <p class="small">3分タイマー＋次の一手（1つだけ選ぶ）。</p>
-        <div class="mini">
-          <span class="tag">3分</span><span class="tag">次の一手</span><span class="tag">ログ</span>
-        </div>
-      </a>
+    /* ── 辞書 ── */
+    const EMOTIONS = [
+      '怖い','恐い','怖かった','恐かった',
+      '不安','焦り','焦る','焦った',
+      '悲しい','悲しかった','つらい','辛い','苦しい','苦しかった',
+      'さみしい','寂しい','孂しい',
+      '嬉しい','嬉しかった','うれしい','よかった','ほっとした',
+      'ムカつく','むかつく','腹立つ','怒り','怒った','イライラ','いらいら',
+      '恥ずかしい','恥ずかしかった','はずかしい',
+      '罪悪感','後悔','くやしい','悔しい',
+      'びっくり','驚いた','おどろいた',
+      '疲れた','つかれた','しんどい','だるい',
+      '嫌だ','嫌だった','いやだ','きつい',
+      'ほしい','欲しい','望む','望んでいる',
+    ];
 
-      <!-- ADHD タイマー -->
-      <a class="app" href="./adhd-timer/">
-        <p class="title">⏱️ ADHD タイマー</p>
-        <p class="small">短いタイマーで起動・集中のきっかけ作り。</p>
-        <div class="mini">
-          <span class="tag">短時間</span><span class="tag">起動</span>
-        </div>
-      </a>
+    const PAST_PATTERNS = [
+      /[\u3057]\u305f$/, /[\u3057]\u305f[。．]?$/, /だった/, /でした/,
+      /ました/, /ません?でした/, /あった/, /なかった/,
+      /言われた/, /された/, /できた/, /できなかった/,
+      /行った/, /来た/, /見た/, /聞いた/,
+    ];
 
-      <!-- urge-log -->
-      <a class="app" href="./urge-log/">
-        <p class="title">🌊 urge-log</p>
-        <p class="small">（フォルダがある場合）ログ系アプリ。</p>
-        <div class="mini">
-          <span class="tag">ログ</span><span class="tag">保存</span>
-        </div>
-      </a>
+    const GUESS_WORDS = [
+      'かもしれない','かも','かもしれ','はずだ','はずがない',
+      '多分','たぶん','おそらく','きっと','おそらく',
+      'だろう','でしょう','かな','かなあ','ような気がする',
+      'ような気がし','と思う','と思った','と思ってた','と感じる',
+      'のかもしれない','ではないか','じゃないか',
+    ];
 
-      <!-- Cute Wallpaper -->
-      <a class="app" href="./cute-wallpaper/">
-        <p class="title">🌸 Cute Wallpaper</p>
-        <p class="small">かわいいアニメーション壁紙。テーマ切替・フルスクリーン対応。</p>
-        <div class="mini">
-          <span class="tag">壁紙</span><span class="tag">かわいい</span><span class="tag">癒し</span>
-        </div>
-      </a>
+    const SELF_STORY = [
+      'だから私は','つまり私は','やはり私は','やっぱり私は',
+      'だから自分は','つまり自分は','私はそういう人間','自分はそういう人間',
+      '私はダメ','自分はダメ','私には無理','自分には無理',
+      '私はいつも','自分はいつも','私はきっと','私はもう',
+      '結局私は','結局自分は','私はずっと','自分はずっと',
+      'どうせ私','どうせ自分',
+    ];
 
-      <!-- AI メモ壁紙 -->
-      <a class="app" href="./ai-memo-wallpaper/">
-        <p class="title">🌙 AI メモ壁紙</p>
-        <p class="small">Lively Wallpaper用。ダーク系のメモツール壁紙。</p>
-        <div class="mini">
-          <span class="tag">壁紙</span><span class="tag">メモ</span><span class="tag">ダーク</span>
-        </div>
-      </a>
+    /* ── 分解ロジック ── */
+    function analyze(text) {
+      const result = {
+        感情: null,
+        事実: null,
+        解釈: null,
+        意味付け: null,
+      };
 
-      <!-- 予備：adhd-app -->
-      <a class="app" href="./adhd-app/">
-        <p class="title">🧩 adhd-app</p>
-        <p class="small">試作アプリ（フォルダがある場合）。</p>
-        <div class="mini">
-          <span class="tag">試作</span><span class="tag">ADHD</span>
-        </div>
-      </a>
+      // 感情
+      const foundEmotion = EMOTIONS.find(w => text.includes(w));
+      if (foundEmotion) {
+        result.感情 = `「${foundEmotion}」という気持ちが含まれている。`;
+      }
 
-      <!-- 予備：adhd-app-1 -->
-      <a class="app" href="./adhd-app-1/">
-        <p class="title">🧩 adhd-app-1</p>
-        <p class="small">試作アプリ（フォルダがある場合）。</p>
-        <div class="mini">
-          <span class="tag">試作</span><span class="tag">ADHD</span>
-        </div>
-      </a>
+      // 事実
+      const foundPast = PAST_PATTERNS.find(p => p.test(text));
+      if (foundPast) {
+        result.事実 = '過去に起きた、または起きていることとして語られている。';
+      }
 
-      <!-- 予備：adhd-app-2 -->
-      <a class="app" href="./adhd-app-2/">
-        <p class="title">🧩 adhd-app-2</p>
-        <p class="small">試作アプリ（フォルダがある場合）。</p>
-        <div class="mini">
-          <span class="tag">試作</span><span class="tag">ADHD</span>
-        </div>
-      </a>
+      // 解釈
+      const foundGuess = GUESS_WORDS.find(w => text.includes(w));
+      if (foundGuess) {
+        result.解釈 = `「${foundGuess}」という推測や解釈が混じっている。`;
+      }
 
-      <!-- デスクトップ Hub -->
-      <a class="app" href="./desktop-hub/">
-        <p class="title">🖥 デスクトップ Hub</p>
-        <p class="small">時計・メモ・アプリランチャーをまとめたダークUIハブ。</p>
-        <div class="mini">
-          <span class="tag">Hub</span><span class="tag">時計</span><span class="tag">ランチャー</span>
-        </div>
-      </a>
+      // 意味付け
+      const foundSelf = SELF_STORY.find(w => text.includes(w));
+      if (foundSelf) {
+        result.意味付け = `「${foundSelf}」という自己物語が含まれている。`;
+      }
 
-    </div>
+      // どれも引っかからなかった場合のフォールバック
+      if (!result.感情 && !result.事実 && !result.解釈 && !result.意味付け) {
+        result.事実 = 'ことばとして表に出た。それだけで十分。';
+      }
 
-    <div class="note">
-      <b>URLのルール：</b><br>
-      一覧（玄関）＝ <code class="inline">/kiri-apps/</code><br>
-      各アプリ（部屋）＝ <code class="inline">/kiri-apps/フォルダ名/</code><br>
-      例：<code class="inline">/kiri-apps/shitakoto-log/</code>
-    </div>
-  </main>
+      return result;
+    }
 
-  <footer>
-    © kiri-apps / GitHub Pages
-  </footer>
+    /* ── 表示 ── */
+    function show(html) {
+      resultEl.classList.remove('visible');
+      resultEl.innerHTML = html;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          resultEl.classList.add('visible');
+        });
+      });
+    }
+
+    function hide() {
+      resultEl.classList.remove('visible');
+      resultEl.innerHTML = '';
+    }
+
+    /* ── ボタン処理 ── */
+    btnHold.addEventListener('click', () => {
+      hide();
+      setTimeout(() => {
+        show(`<p class="pending-message">これは今、解決しなくていい。</p>`);
+      }, 40);
+    });
+
+    btnBreak.addEventListener('click', () => {
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      hide();
+
+      setTimeout(() => {
+        const layers = analyze(text);
+        const keys = ['感情', '事実', '解釈', '意味付け'];
+        const html = `<div class="breakdown">${
+          keys.map(k => {
+            const val = layers[k];
+            return `<div class="layer">
+              <div class="layer-label">${k}</div>
+              <div class="layer-content${val ? '' : ' empty'}">${
+                val ? escHtml(val) : '—'
+              }</div>
+            </div>`;
+          }).join('')
+        }</div>`;
+
+        show(html);
+      }, 800);
+    });
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+  </script>
+
 </body>
 </html>
